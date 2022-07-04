@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Heebo&family=Rubik:wght@600&display=swap');
+
+body {
+  margin:0;
+  width:100vw;
+  height:100vh;
+}
+.resources {
+  padding:10px;
+  font-family:monospace;
+  display:flex;
+
+}
+.char {
+  user-select:none;
+  -webkit-text-stroke-width: 2px;
+}
+.char-big {
+  font-size:50px;
+  letter-spacing:-10px;
+  line-height:50px;
+  margin-right:5px;
+}
+.char-med {
+  font-size:65px;
+  letter-spacing:-4px;
+  line-height:50px;
+}
+.char-small {
+  font-size:65px;
+  letter-spacing:-2px;
+  line-height:50px;
+}
+/*
+-------------------------
+         COLORS
+-------------------------
+*/
+.bg-darkblue {
+  background-color:rgb(14,17,24);
+}
+.txt-water {
+  color:rgb(100,140,255);
+}
+.bg-water {
+  background-color:rgb(100,170,255);
+}
+.txt-sableSap {
+  color:rgb(55,50,145);
+}
+.bg-sableSap {
+  background-color:rgb(55,50,145);
+}
+.txt-heartstring {
+  color:rgb(255,70,100);
+}
+.bg-heartstring {
+  background-color:rgb(255,70,100);
+}
+.txt-seed {
+  color:rgb(105,255,150);
+}
+.bg-seed {
+  background-color:rgb(105,255,150);
+}
+.txt-lumen  {
+  color:rgb(255,240,200);
+}
+.bg-lumen  {
+color:rgb(255,240,200);
+}
+.txt-radiantCore  {
+  color:rgb(255,200,210);
+}
+.bg-radiantCore  {
+color:rgb(255,200,210);
+}
+.txt-steelsilk  {
+  color:rgb(255,140,95);
+}
+.bg-steelsilk  {
+  background-color:rgb(255,205,130);
+}
