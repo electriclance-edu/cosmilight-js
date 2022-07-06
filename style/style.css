@@ -1,19 +1,86 @@
 @import url('https://fonts.googleapis.com/css2?family=Heebo&family=Rubik:wght@600&display=swap');
 
+:root {
+  --
+}
 body {
   margin:0;
   width:100vw;
   height:100vh;
+  overflow:hidden;
+  background-image:linear-gradient(rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url("../resources/img/void-bg.png");
+  background-size:cover;
+  background-position:center;
+}
+p {
+  color:white;
+  font-family:Heebo;
+  font-size:18px;
+}
+h1, h2 {
+  color:white;
+  font-family:Rubik;
+}
+.fill {
+  width:100%;
+  height:100%;
+  position:absolute;
+  top:0;
+  left:0;
+}
+.content {
+  display:flex;
+  width:100%;
+  height:100%;
+}
+.left {
+  width:300px;
+  padding:15px;
+  box-sizing:border-box;
+}
+.right {
+  width:400px;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+}
+.center {
+  flex-grow:1;
+  position:relative;
+}
+.right-content {
+  flex:1;
+  padding:15px;
+  width:100%;
+  box-sizing:border-box;
+  overflow:hidden;
+  position:relative;
+}
+.chatlogGradient {
+  height:100%;
+  width:100%;
+  position:absolute;
+  top:0;
+  left:0;
+  box-sizing:border-box;
+  padding-top:300px;
+  pointer-events:none;
+  background-image:linear-gradient(0deg, rgb(20,30,40) 0%, rgba(0,0,0,0) 100%);
+}
+.right-content p {
+  margin:0 0 10px 0;
+}
+.areaImage {
+  width:100%;
 }
 .resources {
-  padding:10px;
   font-family:monospace;
   display:flex;
-
 }
 .char {
   user-select:none;
   -webkit-text-stroke-width: 2px;
+  padding-right:3px;
 }
 .char-big {
   font-size:50px;
@@ -31,6 +98,68 @@ body {
   letter-spacing:-2px;
   line-height:50px;
 }
+.button {
+  padding:10px 20px;
+  margin:10px;
+  border-radius:5px;
+  text-align:center;
+  user-select:none;
+
+  transition:1s;
+  transition-timing-function:cubic-bezier(0.03, 0.75, 0.3, 0.99);
+  box-shadow:inset 0 0 0 transparent,
+             inset 0 0 0 transparent,
+             -3px -3px 6px rgb(40,60,80),
+             3px 3px 6px rgb(10,10,10);
+  background-color:rgb(30,45,60);
+}
+.button:hover {
+  background-color:rgb(40,60,80),
+}
+.button:active {
+  opacity:0.6;
+  transition:0.0s;
+  background-color:rgb(14,17,24);
+  box-shadow:inset 3px 3px 6px rgb(10,10,10),
+             inset -3px -3px 6px rgb(30,45,60);
+}
+.waterdropSequence {
+  display:flex;
+}
+.roomDisplay {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+.room {
+  width:400px;
+  height:100px;
+  transition:0.2s;
+  background-color:rgba(14,17,24,0.5);
+  box-shadow:inset 3px 3px 12px rgb(7,9,12),
+             inset -3px -3px 12px rgb(35,50,70);
+  border-radius:10px;
+  margin:5px;
+  position:relative;
+}
+.room:hover {
+  box-shadow:inset 3px 3px 12px rgb(11,15,20),
+             inset -3px -3px 12px rgb(35,50,70);
+  background-color:rgb(20,30,40);
+}
+.room p {
+  position:absolute;
+  top:-45px;
+  transition:0.2s;
+  left:0;
+  opacity:0;
+  pointer-events:none;
+  color:rgb(200,200,200);
+}
+.room:hover p {
+  opacity:1;
+}
 /*
 -------------------------
          COLORS
@@ -39,8 +168,14 @@ body {
 .bg-darkblue {
   background-color:rgb(14,17,24);
 }
+.bg-darkishblue {
+  background-color:rgb(20,30,40);
+}
 .txt-water {
   color:rgb(100,140,255);
+}
+.border-water {
+  border-color:rgb(100,140,255);
 }
 .bg-water {
   background-color:rgb(100,170,255);

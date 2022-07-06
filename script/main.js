@@ -14,3 +14,7 @@ function debug_generateResources() {
     document.getElementById("resources").appendChild(span);
   });
 }
+
+function buttonPress() {
+  new Audio("resources/audio/thockTwo.mp3").play();
+}
