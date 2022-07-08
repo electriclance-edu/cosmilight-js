@@ -10,47 +10,122 @@
   </head>
   <body class="bg-darkblue">
     <div class="content">
-      <div class="left bg-darkishblue">
-        <div class="resources" id="resources"></div>
+      <div class="chatlogParent bg-darkishblue">
+        <span class="header textAlignCenter">Resources</span>
+        <div class="resources" id="resources">
+          <div class="resource">
+            <span class="header headerTwo">Water</span> <span class="smallText">14 flasks</span> <br>
+            <span class="txt-water char-big">🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢</span>
+          </div>
+          <div class="resource">
+            <span class="header headerTwo">Lumen</span> <span class="smallText">5 droplets</span> <br>
+            <span class="txt-lumen char-med">🟆🟆🟆🟆🟆</span>
+          </div>
+          <div class="resource">
+            <span class="header headerTwo">Thread</span> <span class="smallText">7 spools</span> <br>
+            <span class="txt-thread char-tiny">≋≋≋≋≋≋≋</span>
+          </div>
+          <div class="resource">
+            <span class="header headerTwo">Seed</span> <span class="smallText">3 seeds</span> <br>
+            <span class="txt-seed char-small">⚉⚉⚉</span>
+          </div>
+          <hr>
+          <div class="resource">
+            <span class="header headerTwo">Steelsilk</span> <span class="smallText">2 rolls</span> <br>
+            <span class="txt-steelsilk char-med enlarge">◆◆</span>
+          </div>
+          <div class="resource">
+            <span class="header headerTwo">Sable Sap</span> <span class="smallText">1 tear</span> <br>
+            <span class="txt-sableSap char-small">✾</span>
+          </div>
+          <div class="resource">
+            <span class="header headerTwo">Heartstring</span> <span class="smallText">3 fibers</span> <br>
+            <span class="txt-heartstring char-small">❦❦❦</span>
+          </div>
+          <div class="resource">
+            <span class="header headerTwo">Radiant Core</span> <span class="smallText">1 core</span> <br>
+            <span class="txt-radiantCore char-small">✠</span>
+          </div>
+        </div>
+        <span class="header textAlignCenter">Log</span>
+        <div class="chatlog">
+          <div class="chatlogGradient"></div>
+          <p class="txt-water">Drip.</p>
+          <p class="txt-water">Drip.</p>
+          <p class="txt-water">Drip.</p>
+          <p>Water.</p>
+          <p class="txt-water">Drip.</p>
+          <p class="txt-water">Drip.</p>
+          <p>Where?</p>
+          <p class="txt-water">Drip.</p>
+          <p>The cold water reaches your fingers.</p>
+          <p>Sensation returns.</p>
+          <p class="txt-water">Drip.</p>
+          <p>But you can't move.</p>
+          <p class="txt-water">Drip.</p>
+          <p>This body isn't listening to you.</p>
+          <p class="txt-water">Drip.</p>
+          <p>But in time, it will.</p>
+          <p class="txt-water">Drip.</p>
+          <p>And so you sleep.</p>
+          <p class="txt-water">Drip.</p>
+          <p class="txt-water">Drip.</p>
+          <p class="txt-water">Drip.</p>
+
+          <div class="button" onmousedown="buttonPress()">
+            <span class="header">Destroy the Amogus</span> <br>
+            <span>listen to the tomato</span>
+          </div>
+        </div>
       </div>
       <div class="center">
-        <div class="waterdropSequence">
+        <div class="mapDisplay fill">
+          <div class="isotileParent">
+            <div class="isotest">
+              <div class="isotile bg-lumen"></div>
+            </div>
+          </div>
+        </div>
+        <div class="introDisplay">
         </div>
         <div class="roomDisplay fill">
-          <div class="room">
-            <p>The Cell</p>
+          <div class="room smallRoom" style="margin-left:400px">
+            <div class="title">
+              <p class="header headerTwo">Grove, Apex</p>
+            </div>
           </div>
-          <div class="room" style="margin-right:400px"></div>
-          <div class="room"></div>
-        </div>
-      </div>
-      <div class="right bg-darkishblue">
-        <img src="resources/img/areas/mountain.jpg" class="areaImage">
-        <div class="right-content">
-          <div class="chatlogGradient"></div>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>You awake in a dark, dark world.</p>
-          <p>Nothing but Amogus is here to accompany you.</p>
-          <p class="button" onmousedown="buttonPress()">listen to the tomato</p>
+          <div class="room">
+            <div class="title">
+              <p class="header headerTwo">Grove, Branch</p>
+            </div>
+          </div>
+          <div class="floor">
+            <div class="room">
+              <div class="title">
+                <p class="header headerTwo">Grove, Condenser <span class="txt-water">+🌢</span></p>
+              </div>
+            </div>
+            <div class="room smallRoom">
+              <div class="title">
+                <p class="header headerTwo">Balcony</p>
+              </div>
+            </div>
+          </div>
+          <div class="room smallRoom" style="margin-right:400px">
+            <div class="title">
+              <p class="header headerTwo">Grove, Home</p>
+            </div>
+          </div>
+          <div class="room">
+            <div class="title">
+              <p class="header headerTwo">Grove, Root</p>
+            </div>
+          </div>
+          <div class="room smallRoom">
+            <div class="title">
+              <p class="header headerTwo">Grove, Core <span class="txt-lumen">+🟆</span></p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

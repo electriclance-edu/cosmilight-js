@@ -12,8 +12,9 @@ class Resource {
   static generateResources() {
     new Resource("water","water","🌢","big");
     new Resource("lumen","lumen","🟆","med");
-    new Resource("steelsilk","steelsilk","◆","med");
+    new Resource("thread","thread","≋","tiny");
     new Resource("seed","seed","⚉","med");
+    new Resource("steelsilk","steelsilk","◆","med");
     new Resource("sableSap","sable sap","✾","small");
     new Resource("heartstring","heartstring","❦","small");
     new Resource("radiantCore","radiant core","✠","small");

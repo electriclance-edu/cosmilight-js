@@ -1,5 +1,4 @@
 initializeClasses();
-debug_generateResources();
 
 function initializeClasses() {
   Resource.generateResources();
