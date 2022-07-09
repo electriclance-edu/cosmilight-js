@@ -18,10 +18,17 @@ p, span {
   font-family:Heebo;
   font-size:18px;
 }
+hr {
+  margin-left:0;
+  margin-right:0;
+}
 .header {
   color:white;
   font-family:Rubik;
   font-size:21px;
+}
+.header:not(.headerTwo, .smallText), .txt-glow, .room .title {
+  text-shadow:0 3px 10px rgba(255,255,255,0.3);
 }
 .headerTwo {
   font-size:18px;
@@ -57,7 +64,13 @@ p, span {
   display:flex;
   flex-direction:column;
   z-index:100;
-  padding-top:20px;
+  padding:20px 20px;
+}
+.chatlogParent p {
+  margin:0;
+}
+.chatlogParent .header {
+  margin:5px 0;
 }
 .center {
   flex-grow:1;
@@ -65,11 +78,13 @@ p, span {
 }
 .chatlog {
   flex:1;
-  padding:0 20px 20px 20px;
   width:100%;
   box-sizing:border-box;
   overflow:hidden;
   position:relative;
+}
+.chatlog p {
+  margin:0 0 10px 0;
 }
 .chatlogGradient {
   height:100%;
@@ -82,15 +97,11 @@ p, span {
   pointer-events:none;
   background-image:linear-gradient(0deg, rgb(20,30,40) 0%, rgba(0,0,0,0) 100%);
 }
-.chatlogParent p {
-  margin:0 0 10px 0;
-}
 .areaImage {
   width:100%;
 }
 .resources {
   font-family:monospace;
-  margin:10px 20px;
 }
 .resources hr {
   margin-bottom:10px;
@@ -100,6 +111,13 @@ p, span {
   top:6px;
   float:right;
   color:rgb(200,200,200);
+}
+.rareResources {
+  margin:10px 0;
+}
+.rareResources div {
+  display:inline-block;
+  margin-right:5px;
 }
 .char-big {
   font-size:var(--resourceHeight);
@@ -183,35 +201,60 @@ p, span {
   width:400px;
   height:100px;
   transition:0.3s;
-  background-color:rgba(14,17,24,0.5);
-  box-shadow:inset 3px 3px 12px rgb(7,9,12),
-             inset -3px -3px 12px rgb(35,50,70);
+  box-shadow:inset 3px 3px 12px rgb(11,15,20),
+             inset -3px 0px 12px rgb(35,50,70);
+  background-color:rgb(20,30,40);
+  border:3px solid rgb(40,60,80);
+  margin:-1px;
   border-radius:10px;
-  margin:5px;
   position:relative;
+  z-index:10;
+  box-sizing:border-box;
 }
 .smallRoom {
   width:200px;
 }
 .room:hover {
   box-shadow:inset 3px 3px 12px rgb(11,15,20),
-             inset -3px -3px 12px rgb(35,50,70);
+             inset -3px 0px 12px rgb(35,50,70);
   background-color:rgb(20,30,40);
+  z-index:20;
+  transform:scale(105%);
 }
 .room .title {
   position:absolute;
-  top:-45px;
-  transition:0.2s;
-  left:0;
+  transition:3s;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
   opacity:0;
   pointer-events:none;
   display:flex;
+  white-space:nowrap;
+  z-index:25;
 }
 .room .title span {
   margin-left:5px;
 }
 .room:hover .title {
+  transition:0.2s;
   opacity:1;
+  text-shadow:0 3px 10px rgba(255,255,255,0.3);
+}
+.room .trapdoor {
+  background-image:linear-gradient(transparent 0%,rgba(40,120,120,1) 100%);
+  width:50px;
+  height:15px;
+  position:absolute;
+}
+.room .door {
+  background-image:linear-gradient(90deg, rgba(40,120,120,0) 0%,rgba(40,120,120,1) 100%);
+  width:15px;
+  height:50px;
+  position:absolute;
+}
+.rotate-flip {
+  transform:rotate(180deg);
 }
 /*
 -------------------------
