@@ -5,19 +5,30 @@
     <title>Cosmilight</title>
     <link rel="stylesheet" href="style/animations.css">
     <link rel="stylesheet" href="style/style.css">
-    <script src="classes/Resource.js"></script> <!--defer?-->
+    <link rel="stylesheet" href="style/txt.css">
+    <link rel="stylesheet" href="style/isotile.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+    <script src="settings.js"></script>
+    <script src="resources/lib/perlin.js"></script>
+    <script src="classes/Player.js"></script>
+    <script src="classes/Resource.js"></script>
+    <script src="classes/Condition.js"></script>
+    <script src="classes/Biome.js"></script>
+    <script src="classes/Tile.js"></script>
+    <script src="classes/World.js"></script>
     <script src="script/main.js" defer></script>
   </head>
   <body class="bg-darkblue">
     <div class="content">
+      <div class="debug fill">
+        <table id="debug_world" style="border-spacing:0" onclick="this.parentNode.parentNode.removeChild(this.parentNode)">
+
+        </table>
+      </div>
       <div class="chatlogParent bg-darkishblue">
       <span class="header textAlignCenter">Log</span>
         <div class="chatlog">
           <div class="chatlogGradient"></div>
-          <div class="button" onmousedown="buttonPress()">
-            <span class="header">im a button</span> <br>
-            <span>ignore me</span>
-          </div>
           <p class="txt-water">Drip.</p>
           <p class="txt-water">Drip.</p>
           <p class="txt-water">Drip.</p>
@@ -39,95 +50,66 @@
           <p class="txt-water">Drip.</p>
           <p class="txt-water">Drip.</p>
           <p class="txt-water">Drip.</p>
+          <div class="button" onmousedown="buttonPress()">
+            <span class="header">im a button</span> <br>
+            <span>ignore me</span>
+          </div>
         </div>
         <hr>
         <span class="header textAlignCenter">Resources</span>
         <div class="resources" id="resources">
-          <div class="resource">
-            <span class="header headerTwo">Water</span> <span class="smallText">14 flasks</span> <br>
-            <span class="txt-water char-big">🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢🌢</span>
+          <div id="majorResources">
+
           </div>
-          <div class="resource">
-            <span class="header headerTwo">Lumen</span> <span class="smallText">5 droplets</span> <br>
-            <span class="txt-lumen char-med">🟆🟆🟆🟆🟆</span>
-          </div>
-          <div class="resource">
-            <span class="header headerTwo">Thread</span> <span class="smallText">7 spools</span> <br>
-            <span class="txt-thread char-tiny">≋≋≋≋≋≋≋</span>
-          </div>
-          <div class="resource">
-            <span class="header headerTwo">Seed</span> <span class="smallText">3 seeds</span> <br>
-            <span class="txt-seed char-small">⚉⚉⚉</span>
-          </div>
-          <p class="header textAlignCenter">Rare Resources</p>
-          <div class="rareResources">
-            <div>
-              <span class="smallText header txt-grey">Steelsilk</span> <br>
-              <span class="txt-steelsilk char-med enlarge">◆◆</span>
-            </div>
-            <div>
-              <span class="smallText header txt-grey">Sable Sap</span> <br>
-              <span class="txt-sableSap char-small">✾</span>
-            </div>
-            <div>
-              <span class="smallText header txt-grey">Heartstring</span> <br>
-              <span class="txt-heartstring char-small">❦❦❦</span>
-            </div>
-            <div>
-              <span class="smallText header txt-grey">Radiant Core</span> <br>
-              <span class="txt-radiantCore char-small">✠</span>
-            </div>
-          </div>
+          <p class="header textAlignCenter" id="rareResourcesHeader" style="display:none">Rare Resources</p>
+          <div class="rareResources" id="rareResources"></div>
         </div>
       </div>
       <div class="center">
+        <div class="fill vignette"></div>
         <div class="mapDisplay fill">
-          <div class="isotileParent">
-            <div class="isotest">
-              <div class="isotile bg-lumen"></div>
-            </div>
-          </div>
+          <div class="isotilePositioner" id="isotilePositioner"></div>
         </div>
-        <div class="introDisplay">
+        <div class="introDisplay hidden">
         </div>
-        <div class="roomDisplay fill">
-          <div class="room smallRoom" style="margin-left:400px">
+        <div class="roomDisplay fill hidden">
+          <div class="room smallRoom titleParent" style="margin-left:400px">
             <div class="title">
               <p class="header headerTwo">Grove, The Fruit</p>
             </div>
             <div class="trapdoor" style="left:20px;bottom:0px"></div>
           </div>
-          <div class="room">
+          <div class="room titleParent">
             <div class="title">
               <p class="header headerTwo">Grove, Branches</p>
             </div>
             <div class="trapdoor rotate-flip" style="right:23px;top:0px"></div>
           </div>
           <div class="floor">
-            <div class="room">
+            <div class="room titleParent">
               <div class="title">
                 <p class="header headerTwo">Grove, Condenser <span class="txt-water">+🌢</span></p>
               </div>
               <div class="door" style="right:0;bottom:10px"></div>
             </div>
-            <div class="room smallRoom">
+            <div class="room smallRoom titleParent">
               <div class="title">
                 <p class="header headerTwo">Balcony</p>
               </div>
               <div class="door rotate-flip" style="left:0;bottom:10px"></div>
             </div>
           </div>
-          <div class="room smallRoom" style="margin-right:400px">
+          <div class="room smallRoom titleParent" style="margin-right:400px">
             <div class="title">
               <p class="header headerTwo">Grove, Home</p>
             </div>
           </div>
-          <div class="room">
+          <div class="room titleParent">
             <div class="title">
               <p class="header headerTwo">Grove, Root</p>
             </div>
           </div>
-          <div class="room smallRoom">
+          <div class="room smallRoom titleParent">
             <div class="title">
               <p class="header headerTwo">Grove, Core <span class="txt-lumen">+🟆</span></p>
             </div>
