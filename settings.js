@@ -2,10 +2,11 @@
 EDITABLE SETTINGS
 Affect Gameplay
 */
-const sightRadius = 0; //affects how far land will be revealed. Default is 0, and will reveal only adjacent tiles.
-const cullRadius = 7;
-const godMode = false;
+const sightRadius = 3; //affects how far land will be revealed. Default is 0, and will reveal only adjacent tiles.
+const cullRadius = 6;
+const godMode = true;
 const debug = false; //sets seed to a cosntant and displays world
+
 /*
 EDITABLE SETTINGS
 Affect World Generation
@@ -16,7 +17,8 @@ const deepSeaPocketProminence = 30; //affects size of sea biome holes in deep se
 const plainsLimit = 10; //noise level where plains can spawn, affects mountains and deserts
 const cityProminence = 0.15; //affects rarity of cities
 const mountainThickness = 1.3; //affects width of mountains
+
 /*
 You don't really want to edit these.
 */
-const revealRadius = 0;
+const revealRadius = 2;

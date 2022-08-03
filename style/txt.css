@@ -1,5 +1,6 @@
 .txt-water {
   color:rgb(100,100,255);
+  text-shadow:none !important;
 }
 .txt-lumen  {
   color:rgb(255,240,180);

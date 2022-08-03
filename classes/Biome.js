@@ -118,7 +118,7 @@ class Biome {
     );
     var cityDescriptions = [
       "Within these ruins echo a story old and nearly forgotten. Humanity had lived here, powerful and resplendent, enjoying the blessings of life and machine and magic.",
-      "Humanity knew these blessings were given by the resplendent light of the Sun. Life and machine and magic held something in common, an unending requirement for energy, and the Sun would satiate that thirst endlessly.",
+      "Humanity knew these blessings were given by the resplendent light of the Sun. Life and machine and magic held something in common, an unending requirement for energy, and they would depend on none other than the resplendence of the Sun to sate that thirst.",
       "But man was a different beast from its predecessors of life, and its daughters of machine and magic, as though these would accept what they were given, man sought all that they could see. And in ancient stories and whispers, they saw promises of power beyond the Sun. For beyond the skies, there existed beings separate from the resplendence, the eminent Moon and its mystery. In their lust they sought to unlock the otherworldly power of the eminence."
     ];
     new Biome("fireflyCity","Firefly City",cityDescriptions,["water",1,"lumen",3]);

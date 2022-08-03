@@ -3,9 +3,17 @@ GLOBALS
 --------------*/
 var isotileWidth, isotileHeight, isotilePadding;
 var isotilePositioner = document.getElementById("isotilePositioner");
+var chatlog = document.getElementById("chatlog");
+var uiEventState = false;
+var walkAudio;
 /*--------------
 LISTENERS
 --------------*/
+document.addEventListener('click', (event) => {
+  if (event.target.classList.contains('button')) {
+    sound('button');
+  }
+})
 document.addEventListener('keydown', function(e) {
   switch (e.keyCode) {
       case 37:
@@ -38,6 +46,7 @@ document.addEventListener('keydown', function(e) {
 ONLOAD
 --------------*/
 getCSSVariables();
+initializeAudio();
 initialize();
 
 function rawSeededRand(){};
@@ -75,11 +84,40 @@ function initialize() {
   Player.player.incrementResource("seed",1);
   updateResources();
 }
+function initializeAudio() {
+  walkAudio = new Audio("resources/audio/walk2.mp3");
+}
 function getCSSVariables() {
   var style = getComputedStyle(document.body);
   isotilePadding = parseInt(style.getPropertyValue("--isotilePadding").slice(0,-2));
   isotileWidth = parseInt(style.getPropertyValue("--rawIsotileWidth").slice(0,-2));
   isotileHeight = isotileWidth/2;
+}
+/*
+--------------
+LOGGING FUNCTIONS
+--------------
+*/
+function logText(string,colorResource = false) {
+  var elem = document.createElement("p");
+  elem.innerHTML = string;
+  if (!colorResource) {
+    elem.classList.add("txt-" + colorResource);
+  }
+  chatlog.prepend(elem);
+}
+function triggerEvent(eventObj) {
+  triggerUIEventState(true);
+}
+function triggerUIEventState(state = !uiEventState) {
+  if (state) {
+    document.getElementById("hideOnEvent").style.transitionTimingFunction = "cubic-bezier(0, 0.61, 0.33, 1)";
+    chatlog.parentNode.classList.add("tag-chatlogParent-eventOccurring");
+  } else {
+    document.getElementById("hideOnEvent").style.transitionTimingFunction = "cubic-bezier(0.61, 0.02, 0.97, 0.43)";
+    chatlog.parentNode.classList.remove("tag-chatlogParent-eventOccurring");
+  }
+  uiEventState = state;
 }
 /*
 --------------
@@ -273,6 +311,7 @@ function movePlayer(x,y,tile,bypass = false) {
   var diff_y = Math.abs(Player.player.pos.y - y);
   var isAdjacent = (diff_x <= 1 && diff_y <= 1 && diff_x != diff_y);
   if (isAdjacent || godMode || bypass) {
+    sound("walk");
     updateTileFromVoid(tile);
     if (World.world.getTile(x,y).getBiome().isTraversable() || godMode) {
       isotilePositioner.style.top = (isotileHeight/-2)*x - (isotileHeight/-2)*y - (isotilePadding*x - isotilePadding*y) + "px";
@@ -343,8 +382,12 @@ function createTileElem(x,y,biome = Biome.getBiome("plains"),isVoid, obj_structu
 AUDIO FUNCTIONS
 ---------------
 */
-function buttonPress() {
-  new Audio("resources/audio/thockTwo.mp3").play();
+function sound(type) {
+  if (type == "button") {
+    new Audio("resources/audio/thockTwo.mp3").play();
+  } else if (type == "walk") {
+    walkAudio.play();
+  }
 }
 /*
 -----------------

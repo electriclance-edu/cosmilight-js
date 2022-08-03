@@ -38,7 +38,7 @@
              -6px 6px 0 rgb(60,85,35),
              -4px 4px 0 rgb(60,85,35),
              -2px 2px 0 rgb(60,85,35);
-  filter:hue-rotate(130deg) saturate(1.2);
+  filter:hue-rotate(130deg) saturate(1.4) brightness(1);
   top:10px;
   opacity:0.6;
 }
@@ -58,9 +58,9 @@
              -6px 6px 0 rgb(60,85,35),
              -4px 4px 0 rgb(60,85,35),
              -2px 2px 0 rgb(60,85,35);
-  filter:hue-rotate(130deg) brightness(1.3) saturate(0.7);
+  filter:hue-rotate(130deg) saturate(1.1) brightness(1);
   top:10px;
-  opacity:0.6;
+  opacity:0.8;
 }
 .isotile-deepSea {
   background-color:rgb(90,130,50);
@@ -201,7 +201,7 @@
              -6px 6px 0 rgb(60,85,35),
              -4px 4px 0 rgb(60,85,35),
              -2px 2px 0 rgb(60,85,35);
-  filter:hue-rotate(310deg) saturate(0.4) brightness(1.6);
+  filter:hue-rotate(310deg) saturate(0.6) brightness(1.4);
 }
 .isotile-amogus {
   filter:invert(1);

@@ -19,16 +19,44 @@
     <script src="script/main.js" defer></script>
   </head>
   <body class="bg-darkblue">
+    <div class="debugOptions glass-bg">
+      <p class="header" style="margin:0" onclick="this.parentNode.parentNode.removeChild(this.parentNode)">Debug Menu</p>
+      <p class="button" onclick="World.world.debugDisplay()">Generate world map</p> <br>
+      <p class="button" onclick="triggerUIEventState()">Trigger event</p>
+    </div>
+    <div class="debug fill">
+      <table id="debug_world" class="debugTable" onclick="this.innerHTML = '';"></table>
+    </div>
     <div class="content">
-      <div class="debug fill">
-        <table id="debug_world" style="border-spacing:0" onclick="this.parentNode.parentNode.removeChild(this.parentNode)">
-
-        </table>
-      </div>
-      <div class="chatlogParent bg-darkishblue">
-      <span class="header textAlignCenter">Log</span>
-        <div class="chatlog">
-          <div class="chatlogGradient"></div>
+      <div class="chatlogParent glass-bg">
+      <p class="header textAlignCenter">Log</p>
+        <div class="chatlog hiddenScrollbar" id="chatlog">
+          <div class="loggedEvent">
+            <img src="resources/img/areas/mountain.jpg">
+            <p class="header">Thicker than Water</p>
+            <p>
+              The thick stench of blood assaults your nose, a stench so alien to this landscape because of its familiarity to you. This smell should not exist here in this world; there aren't any animals to bleed it.
+              <br><br>
+              But it assaults you all the same.
+              <br><br>
+              The closer you get to its source the more powerful it becomes, a sea threatening to greet you if you walk any further.
+              <br><br>
+              But at the odor's strongest, all you find is a lake of water, the stench immediately dissipating as you walk thru the plants by the lakeside to find the moonlit lake.
+              <br><br>
+              <span class="txt-water">This water is potable.</span>
+            </p>
+            <div class="eventOptions">
+              <div class="button">
+                <span class="header txt-water">Replenish your water.</span>
+                <span>Fully refills your <span class="txt-water">🌢</span> supplies.</span> <br>
+                <span class="txt-grey smallText">You will explore the lake afterwards.</span>
+              </div>
+              <div class="button">
+                <span class="header">Explore the lake.</span>
+                <span>You avoid drinking the lake water.</span> <br>
+              </div>
+            </div>
+          </div>
           <p class="txt-water">Drip.</p>
           <p class="txt-water">Drip.</p>
           <p class="txt-water">Drip.</p>
@@ -55,18 +83,20 @@
             <span>ignore me</span>
           </div>
         </div>
-        <hr>
-        <span class="header textAlignCenter">Resources</span>
-        <div class="resources" id="resources">
-          <div id="majorResources">
+        <div class="hideOnEvent" id="hideOnEvent">
+          <hr>
+          <p class="header textAlignCenter">Resources</p>
+          <div class="resources" id="resources">
+            <div id="majorResources">
 
+            </div>
+            <p class="header textAlignCenter" id="rareResourcesHeader" style="display:none">Rare Resources</p>
+            <div class="rareResources" id="rareResources"></div>
           </div>
-          <p class="header textAlignCenter" id="rareResourcesHeader" style="display:none">Rare Resources</p>
-          <div class="rareResources" id="rareResources"></div>
         </div>
       </div>
+      <div class="fill vignette"></div>
       <div class="center">
-        <div class="fill vignette"></div>
         <div class="mapDisplay fill">
           <div class="isotilePositioner" id="isotilePositioner"></div>
         </div>
