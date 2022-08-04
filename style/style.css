@@ -14,6 +14,7 @@ body {
   background-image:linear-gradient(rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url("../resources/img/void-bg.png");
   background-size:cover;
   background-position:center;
+  overflow-anchor:none;
 }
 p, span {
   color:rgb(230,230,230);
@@ -86,7 +87,6 @@ body .chatlogParent {
   transition:1s;
 }
 .chatlogParent .chatlog > p {
-  line-height:15px;
 }
 .chatlogParent hr {
   margin-top:0;
@@ -118,6 +118,17 @@ body .chatlogParent .loggedEvent {
   background-image:radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(25,11,31,0.1) 10%, rgba(0,0,0,1) 100%);
   z-index:25;
   pointer-events:none;
+}
+
+.darken {
+  z-index:26;
+  background-color:rgba(0,0,0,0.5);
+  opacity:0;
+  transition:0.5s;
+  pointer-events:none;
+}
+.darken:hover {
+  opacity:1;
 }
 .chatlog {
   flex:1;
@@ -393,6 +404,9 @@ body .chatlogParent .loggedEvent {
   z-index:1000;
   text-align:center;
 }
+body .debugOptions .debugOptionsData p {
+  margin:0;
+}
 .hiddenScrollbar::-webkit-scrollbar {
   display:none;
 }
@@ -411,7 +425,4 @@ body .chatlogParent .loggedEvent {
   background-color:rgba(14,17,24,0.5);
   backdrop-filter: blur(5px);
   border:3px solid rgba(20,30,40,0.5);
-}
-.txt-grey {
-  color:rgb(180,180,180);
 }

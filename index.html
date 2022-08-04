@@ -22,14 +22,20 @@
     <div class="debugOptions glass-bg">
       <p class="header" style="margin:0" onclick="this.parentNode.parentNode.removeChild(this.parentNode)">Debug Menu</p>
       <p class="button" onclick="World.world.debugDisplay()">Generate world map</p> <br>
-      <p class="button" onclick="triggerUIEventState()">Trigger event</p>
+      <p class="button" onclick="triggerUIEventState()">Trigger event</p> <br>
+      <p class="button" onclick="mute = !mute;this.children[0].innerHTML = mute ? 'unmute' : 'mute';"><span id="debug_muteState"></span></p>
+      <div class="debugOptionsData">
+        <span id="debug_position-x">x:</span>
+        <span id="debug_position-y">y:</span>
+        <p id="debug_worldSeed">seed:</p>
+      </div>
     </div>
     <div class="debug fill">
       <table id="debug_world" class="debugTable" onclick="this.innerHTML = '';"></table>
     </div>
     <div class="content">
       <div class="chatlogParent glass-bg">
-      <p class="header textAlignCenter">Log</p>
+        <p class="header textAlignCenter">Log</p>
         <div class="chatlog hiddenScrollbar" id="chatlog">
           <div class="loggedEvent">
             <img src="resources/img/areas/mountain.jpg">
@@ -41,7 +47,7 @@
               <br><br>
               The closer you get to its source the more powerful it becomes, a sea threatening to greet you if you walk any further.
               <br><br>
-              But at the odor's strongest, all you find is a lake of water, the stench immediately dissipating as you walk thru the plants by the lakeside to find the moonlit lake.
+              But at the odor's strongest, all you find is an innocent lake of water, the stench immediately dissipating as you walk thru the plants by the lakeside to find the moonlit lake.
               <br><br>
               <span class="txt-water">This water is potable.</span>
             </p>
@@ -95,6 +101,7 @@
           </div>
         </div>
       </div>
+      <div class="fill darken"></div>
       <div class="fill vignette"></div>
       <div class="center">
         <div class="mapDisplay fill">

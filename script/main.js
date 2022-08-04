@@ -46,11 +46,15 @@ document.addEventListener('keydown', function(e) {
 ONLOAD
 --------------*/
 getCSSVariables();
+initializeDebug();
 initializeAudio();
 initialize();
 
 function rawSeededRand(){};
 
+function initializeDebug() {
+  document.getElementById("debug_muteState").innerHTML = mute ? 'unmute' : 'mute';
+}
 function initialize() {
   Biome.generateBiomes();
   Resource.generateResources();
@@ -63,12 +67,10 @@ function initialize() {
     var seed = randInt(1000);
     console.log(`seed: ${seed}`);
   }
+  document.getElementById("debug_worldSeed").innerHTML = "seed: " + seed;
   rawSeededRand = new Math.seedrandom(seed);
 
   World.world = new World(100,seed);
-  if (debug) {
-    World.world.debugDisplay();
-  }
 
   var start = World.world.selectStartPosition();
   Player.player = new Player(start[0],start[1]);
@@ -98,11 +100,13 @@ function getCSSVariables() {
 LOGGING FUNCTIONS
 --------------
 */
-function logText(string,colorResource = false) {
+function logText(string,classNames = false) {
   var elem = document.createElement("p");
   elem.innerHTML = string;
-  if (!colorResource) {
-    elem.classList.add("txt-" + colorResource);
+  if (classNames != false) {
+    classNames.forEach(function(className){
+      elem.classList.add("txt-" + className);
+    });
   }
   chatlog.prepend(elem);
 }
@@ -311,14 +315,22 @@ function movePlayer(x,y,tile,bypass = false) {
   var diff_y = Math.abs(Player.player.pos.y - y);
   var isAdjacent = (diff_x <= 1 && diff_y <= 1 && diff_x != diff_y);
   if (isAdjacent || godMode || bypass) {
-    sound("walk");
     updateTileFromVoid(tile);
-    if (World.world.getTile(x,y).getBiome().isTraversable() || godMode) {
+    var biome = World.world.getTile(x,y).getBiome();
+    if (biome.isTraversable() || godMode) {
+      sound("walk");
+      if (!biome.hasBeenLogged) {
+        logText(biome.getDesc(),["italic","strongGlow"]);
+        biome.hasBeenLogged = true;
+      } else {
+        logText(biome.getMovementDesc());
+      }
+
       isotilePositioner.style.top = (isotileHeight/-2)*x - (isotileHeight/-2)*y - (isotilePadding*x - isotilePadding*y) + "px";
       isotilePositioner.style.left = (isotileWidth/-2)*x + (isotileWidth/-2)*y - (isotilePadding*x + isotilePadding*y) + "px";
       setHoverState(getTileElem(x,y),true);
       setHoverState(getTileElem(Player.player.pos.x,Player.player.pos.y),false);
-      Player.player.pos = {x:x,y:y};
+      Player.player.setPos(x,y);
 
       if (sightRadius == 0) {
         displayAdjacents(x,y);
@@ -383,6 +395,10 @@ AUDIO FUNCTIONS
 ---------------
 */
 function sound(type) {
+  if (mute) {
+    return true;
+  }
+
   if (type == "button") {
     new Audio("resources/audio/thockTwo.mp3").play();
   } else if (type == "walk") {

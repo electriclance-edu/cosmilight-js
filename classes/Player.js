@@ -16,4 +16,9 @@ class Player {
   incrementResource(id,amt) {
     Player.player.resourceAmounts[id] = amt;
   }
+  setPos(x,y) {
+    this.pos = {x:x,y:y};
+    document.getElementById("debug_position-x").innerHTML = "x: "+x;
+    document.getElementById("debug_position-y").innerHTML = "y: "+y;
+  }
 }

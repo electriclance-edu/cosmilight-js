@@ -42,7 +42,7 @@ class World {
           biome = "sea";
         } else if (oceanNoiseValue < deepSeaProminence) {
           if (noiseValue - roughNoiseValue/deepSeaPocketProminence < 11) {
-            biome = "deepSea";
+            biome = "abyssalWaters";
           } else {
             biome = "sea";
           }

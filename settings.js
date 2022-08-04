@@ -5,7 +5,8 @@ Affect Gameplay
 const sightRadius = 3; //affects how far land will be revealed. Default is 0, and will reveal only adjacent tiles.
 const cullRadius = 6;
 const godMode = true;
-const debug = false; //sets seed to a cosntant and displays world
+const debug = false; //sets seed to a constant and shows debug menu
+var mute = true;
 
 /*
 EDITABLE SETTINGS
