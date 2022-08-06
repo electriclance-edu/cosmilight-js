@@ -102,9 +102,6 @@ body .chatlogParent .loggedEvent {
   text-align:center;
   margin-top:-50px;
 }
-.chatlog .loggedEvent p {
-  margin:15px 10px;
-}
 .loggedEvent .eventOptions {
   display:flex;
   align-items:center;
@@ -126,9 +123,6 @@ body .chatlogParent .loggedEvent {
   opacity:0;
   transition:0.5s;
   pointer-events:none;
-}
-.darken:hover {
-  opacity:1;
 }
 .chatlog {
   flex:1;
@@ -222,6 +216,9 @@ body .chatlogParent .loggedEvent {
 
   display:inline-block;
 }
+.button.div * {
+  margin:3px 0;
+}
 .button * {
   pointer-events:none;
 }
@@ -247,6 +244,7 @@ body .chatlogParent .loggedEvent {
   display:flex;
   align-items:center;
   justify-content:center;
+  -webkit-mask-image:radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
 }
 .isotilePositioner {
   position:relative;
@@ -403,12 +401,16 @@ body .chatlogParent .loggedEvent {
   right:20px;
   z-index:1000;
   text-align:center;
+  width:200px;
 }
-body .debugOptions .debugOptionsData p {
-  margin:0;
+body .debugOptions *:not(.header) {
+  margin:2px 0;
 }
 .hiddenScrollbar::-webkit-scrollbar {
   display:none;
+}
+.noMargin {
+  margin:0;
 }
 /*
 -------------------------

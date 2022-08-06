@@ -169,7 +169,8 @@ class Biome {
       "Center of the World",
       "At the <b>center</b> of the world lies the ruins of a tower, one that reached beyond the sky.",
       [
-        "big tower Poggers"
+        "big tower Poggers",
+        "there is a tower among us"
       ],
       false,
       ["water",1,"thread",1],

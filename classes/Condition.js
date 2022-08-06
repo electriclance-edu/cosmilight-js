@@ -9,3 +9,12 @@ class Condition {
     return false;
   }
 }
+
+var conditionChecks = {
+  hasTag:(tagName)=>{
+    return false;
+  },
+  hasResources:(param)=>{
+    return false;
+  }
+}

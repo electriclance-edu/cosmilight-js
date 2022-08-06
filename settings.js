@@ -2,11 +2,11 @@
 EDITABLE SETTINGS
 Affect Gameplay
 */
-const sightRadius = 3; //affects how far land will be revealed. Default is 0, and will reveal only adjacent tiles.
+var sightRadius = 2; //affects how far land will be revealed. Default is 0, and will reveal only adjacent tiles.
 const cullRadius = 6;
-const godMode = true;
+var godMode = false;
 const debug = false; //sets seed to a constant and shows debug menu
-var mute = true;
+var mute = false;
 
 /*
 EDITABLE SETTINGS
@@ -22,4 +22,4 @@ const mountainThickness = 1.3; //affects width of mountains
 /*
 You don't really want to edit these.
 */
-const revealRadius = 2;
+var revealRadius = sightRadius - 1;

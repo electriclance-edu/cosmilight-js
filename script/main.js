@@ -58,6 +58,7 @@ function initializeDebug() {
 function initialize() {
   Biome.generateBiomes();
   Resource.generateResources();
+  Event.generateMinorEvents();
   createResourceElements();
 
   var seed;
@@ -110,8 +111,12 @@ function logText(string,classNames = false) {
   }
   chatlog.prepend(elem);
 }
-function triggerEvent(eventObj) {
+function triggerEvent(eventId) {
+  var eventObj = Event.events[eventId];
+  //check if event is triggerable
   triggerUIEventState(true);
+  logEvent(eventObj);
+  //trigger all consequences of the event
 }
 function triggerUIEventState(state = !uiEventState) {
   if (state) {
@@ -121,7 +126,64 @@ function triggerUIEventState(state = !uiEventState) {
     document.getElementById("hideOnEvent").style.transitionTimingFunction = "cubic-bezier(0.61, 0.02, 0.97, 0.43)";
     chatlog.parentNode.classList.remove("tag-chatlogParent-eventOccurring");
   }
+  document.getElementById("eventDarkenScreen").style.opacity = state ? 1 : 0;
   uiEventState = state;
+}
+function logEvent(eventObj) {
+  var eventDiv = document.createElement("div");
+  eventDiv.classList.add("loggedEvent");
+  var img = document.createElement("img");
+  img.src = "resources/img/" + eventObj.imgUrl;
+  var header = document.createElement("p");
+  header.classList.add("header");
+  header.innerHTML = eventObj.header;
+
+  eventDiv.appendChild(img);
+  eventDiv.appendChild(header);
+
+  for (var i = 0; i < eventObj.paragraphs.length; i++) {
+    eventDiv.appendChild(createTextObject(eventObj.paragraphs[i]));
+  }
+
+  var eventOptions = document.createElement("div");
+  eventOptions.classList.add("eventOptions");
+
+  for (var i = 0; i < eventObj.options.length; i++) {
+    eventOptions.appendChild(createEventOptionObject(eventObj.options[i]));
+  }
+  eventDiv.appendChild(eventOptions);
+
+  chatlog.prepend(eventDiv);
+}
+function createTextObject(data) {
+  var elem = document.createElement("p");
+  if (typeof data == "string") {
+    elem.innerHTML = data;
+  } else {
+    elem.innerHTML = data.content;
+    for (var i = 0; i < data.class.length; i++) {
+      elem.classList.add("txt-" + data.class[i]);
+    }
+  }
+  return elem;
+}
+function createEventOptionObject(eventOption) {
+  var eventOptionElement = document.createElement("div");
+  eventOptionElement.classList.add("button");
+  var header = createTextObject(eventOption.header);
+  header.classList.add("header");
+  var desc = createTextObject(eventOption.desc);
+  eventOptionElement.appendChild(header);
+  eventOptionElement.appendChild(desc);
+
+  if (eventOption.greyDesc != false) {
+    var greyText = createTextObject(eventOption.greyDesc);
+    greyText.classList.add("txt-grey");
+    greyText.classList.add("smallText");
+    eventOptionElement.appendChild(greyText);
+  }
+
+  return eventOptionElement;
 }
 /*
 --------------
@@ -313,8 +375,10 @@ function calcLight(x,y,distance,tile) {
 function movePlayer(x,y,tile,bypass = false) {
   var diff_x = Math.abs(Player.player.pos.x - x);
   var diff_y = Math.abs(Player.player.pos.y - y);
+
   var isAdjacent = (diff_x <= 1 && diff_y <= 1 && diff_x != diff_y);
-  if (isAdjacent || godMode || bypass) {
+  var isNotSameTile = diff_x + diff_y != 0;
+  if (((isAdjacent || godMode) && isNotSameTile) || bypass) {
     updateTileFromVoid(tile);
     var biome = World.world.getTile(x,y).getBiome();
     if (biome.isTraversable() || godMode) {
@@ -402,7 +466,7 @@ function sound(type) {
   if (type == "button") {
     new Audio("resources/audio/thockTwo.mp3").play();
   } else if (type == "walk") {
-    walkAudio.play();
+    //walkAudio.play();
   }
 }
 /*
