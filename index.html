@@ -6,13 +6,14 @@
     <link rel="stylesheet" href="style/animations.css">
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="style/txt.css">
+    <link rel="stylesheet" href="style/room.css">
     <link rel="stylesheet" href="style/isotile.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
     <script src="settings.js"></script>
     <script src="resources/lib/perlin.js"></script>
     <script src="classes/Consequence.js"></script>
-    <script src="classes/EventOption.js"></script>
-    <script src="classes/Event.js"></script>
+    <script src="classes/SituationChoice.js"></script>
+    <script src="classes/Situation.js"></script>
     <script src="classes/Player.js"></script>
     <script src="classes/Resource.js"></script>
     <script src="classes/Condition.js"></script>
@@ -22,18 +23,26 @@
     <script src="script/main.js" defer></script>
   </head>
   <body class="bg-darkblue">
-    <div class="debugOptions glass-bg">
-      <p class="header" style="margin:0" onclick="this.parentNode.parentNode.removeChild(this.parentNode)">Debug Menu</p>
-      <p class="button" onclick="World.world.debugDisplay()">Generate world map (laggy)</p> <br>
-      <p class="smallText txt-grey noMargin">Click the map to hide it</p> <br>
-      <p class="button" onclick="triggerEvent('flowerPatch')">Trigger event</p> <br>
-      <p class="button" onclick="triggerUIEventState(false)">Untrigger event</p> <br>
-      <p class="button" onclick="document.getElementById('mapDisplay').classList.add('hidden');document.getElementById('roomDisplay').classList.remove('hidden')">Switch to roomDisplay</p> <br>
-      <p class="button" onclick="sightRadius = 4;revealRadius = 3">Up Vision</p> <br>
+    <div class="glass-bg debugMenuHidden hidden" id="debugMenuHidden" onclick="toggleDebugMenu(true)">
+
+    </div>
+    <div class="debugMenu glass-bg hidden" id="debugMenu">
+      <p class="header" style="margin:0" onclick="toggleDebugMenu(false)">Debug Menu</p>
+      <p class="button" onclick="World.world.debugDisplay()">Generate world map</p>
+      <p class="smallText txt-grey noMargin">(click map to hide)</p>
+      <p class="button" onclick="triggerSituation('flowerPatch')">Trigger situation</p> <br>
+      <p class="button" onclick="displayDisplay('roomDisplay')">Room Display</p> <br>
+      <p class="button" onclick="displayDisplay('mapDisplay')">Map Display</p> <br>
+      <p class="button" onclick="displayDisplay('expeditionDisplay')">Expedition Display</p> <br>
+      <p class="smallText txt-grey noMargin">adjust sightRadius</p>
+      <p class="button" onclick="sightRadius++;revealRadius = sightRadius - 1;">+</p>
+      <p class="button" onclick="sightRadius = 2;revealRadius = 1">-</p> <br>
+      <p class="smallText txt-grey noMargin">adjust cullRadius</p>
+      <p class="button" onclick="cullRadius++;">+</p>
+      <p class="button" onclick="cullRadius--;">-</p> <br>
       <p class="button" onclick="godMode = !godMode">Toggle Fly</p><br>
-      <p class="smallText txt-grey noMargin">Untoggling fly above unwalkable tiles will get you stuck</p> <br>
       <p class="button" onclick="mute = !mute;this.children[0].innerHTML = mute ? 'unmute' : 'mute';"><span id="debug_muteState"></span></p>
-      <div class="debugOptionsData">
+      <div class="debugMenuData">
         <span id="debug_position-x">x:</span>
         <span id="debug_position-y">y:</span>
         <p id="debug_worldSeed">seed:</p>
@@ -43,65 +52,12 @@
       <table id="debug_world" class="debugTable" onclick="this.innerHTML = '';"></table>
     </div>
     <div class="content">
-      <div class="chatlogParent glass-bg">
-        <p class="header textAlignCenter">Log</p>
-        <div class="chatlog hiddenScrollbar" id="chatlog">
-          <!-- <br><br><br><br><br><br><br><br>
-          <div class="loggedEvent">
-            <img src="resources/img/areas/mountain.jpg">
-            <p class="header">Thicker than Water</p>
-            <p>
-              The thick stench of blood assaults your nose, a stench so alien to this landscape because of its familiarity to you. This smell should not exist here in this world; there aren't any animals to bleed it.
-              <br><br>
-              But it assaults you all the same.
-              <br><br>
-              The closer you get to its source the more powerful it becomes, a sea threatening to greet you if you walk any further.
-              <br><br>
-              But at the odor's strongest, all you find is an innocent lake of water, the stench immediately dissipating as you walk thru plants by the lakeside to find the moonlit lake.
-              <br><br>
-              <span class="txt-water">This water is potable.</span>
-            </p>
-            <div class="eventOptions">
-              <div class="button">
-                <span class="header txt-water">Replenish your water.</span>
-                <p>Fully refills your <span class="txt-water">🌢</span> supplies.</p>
-                <span class="txt-grey smallText">You will explore the lake afterwards.</span>
-              </div>
-              <div class="button">
-                <span class="header">Explore the lake.</span>
-                <span>You avoid drinking the lake water.</span> <br>
-              </div>
-            </div>
-          </div>
-          <p class="txt-water">Drip.</p>
-          <p class="txt-water">Drip.</p>
-          <p class="txt-water">Drip.</p>
-          <p>Water.</p>
-          <p class="txt-water">Drip.</p>
-          <p class="txt-water">Drip.</p>
-          <p>Where?</p>
-          <p class="txt-water">Drip.</p>
-          <p>The cold water reaches your fingers.</p>
-          <p>Sensation returns.</p>
-          <p class="txt-water">Drip.</p>
-          <p>But you can't move.</p>
-          <p class="txt-water">Drip.</p>
-          <p>This body isn't listening to you.</p>
-          <p class="txt-water">Drip.</p>
-          <p>But in time, it will.</p>
-          <p class="txt-water">Drip.</p>
-          <p>And so you sleep.</p>
-          <p class="txt-water">Drip.</p>
-          <p class="txt-water">Drip.</p>
-          <p class="txt-water">Drip.</p>
-          <div class="button" onmousedown="buttonPress()">
-            <span class="header">im a button</span> <br>
-            <span>ignore me</span>
-          </div> -->
-        </div>
-        <div class="hideOnEvent" id="hideOnEvent">
+      <div class="left glass-bg">
+        <p class="header stylizedHeader textAlignCenter">Log</p>
+        <div class="chatlog hiddenScrollbar" id="chatlog"></div>
+        <div>
           <hr>
-          <p class="header textAlignCenter">Resources</p>
+          <p class="header stylizedHeader textAlignCenter">Resources</p>
           <div class="resources" id="resources">
             <div id="majorResources">
 
@@ -111,56 +67,124 @@
           </div>
         </div>
       </div>
-      <div class="fill darken" id="eventDarkenScreen"></div>
-      <!-- <div class="fill vignette"></div> -->
       <div class="center">
-        <div class="mapDisplay fill" id="mapDisplay">
-          <div class="isotilePositioner" id="isotilePositioner"></div>
+        <div class="moonParent hidden">
+          <div class="moon">
+            <div class="shifter"></div>
+            <div class="disc"></div>
+          </div>
+          <p class="godHeader txt-glow txt-center noMargin">FULL　MOON</p>
+          <p class="txt-grey noMargin txt-center header">UNRIVALED EMINENCE</p>
         </div>
-        <div class="introDisplay hidden">
+        <div class="fill darken" id="darkenedScreen">
+          <p class="header" id="darkenedScreenMsg"></p>
+          <div class="progressBar">
+            <div class="progressBarFill"  id="darkenedScreenProgress"></div>
+          </div>
         </div>
-        <div class="roomDisplay fill hidden" id="roomDisplay">
-          <div class="room smallRoom titleParent" style="margin-left:400px">
-            <div class="title">
-              <p class="header headerTwo">Grove, The Fruit</p>
-            </div>
-            <div class="trapdoor" style="left:20px;bottom:0px"></div>
+        <div id="displayParent">
+          <div class="mapDisplay fill flex-center hidden" id="mapDisplay">
+            <div class="positioner" id="isotilePositioner"></div>
           </div>
-          <div class="room titleParent">
-            <div class="title">
-              <p class="header headerTwo">Grove, Branches</p>
-            </div>
-            <div class="trapdoor rotate-flip" style="right:23px;top:0px"></div>
-          </div>
-          <div class="floor">
-            <div class="room titleParent">
-              <div class="title">
-                <p class="header headerTwo">Grove, Condenser <span class="txt-water">+🌢</span></p>
+          <div class="expeditionDisplay fill flex-center hidden" id="expeditionDisplay">
+            <div class="leftExpeditionDisplay flex-center">
+              <div id="situationContainer">
+
               </div>
-              <div class="door" style="right:0;bottom:10px"></div>
             </div>
-            <div class="room smallRoom titleParent">
-              <div class="title">
-                <p class="header headerTwo">Balcony</p>
+            <div class="rightExpeditionDisplay flex-center">
+              <p class="header stylizedHeader smallMargin">Map</p>
+              <p class="txt-grey noMargin textAlignCenter">Click on a location to move to it.<br>You may move to past locations at an increased cost.</p>
+              <div class="locationDisplay flex-column">
+                <div class="flex-row flex-center">
+                  <p class="header headerLarge">1</p>
+                  <hr>
+                  <div class="location flex-row">
+                    <img src="resources/img/areas/forest.png" class="bgImage">
+                    <p class="locationCost txt-water char-big">🌢</p>
+                    <div class="flex-column">
+                      <p class="txt-shadow header">Old Amougs</p>
+                      <p>Ancient god of the underworld</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex-row flex-center">
+                  <p class="header headerLarge">2</p>
+                  <hr>
+                  <div class="location flex-row">
+                    <img src="resources/img/areas/mountain.jpg" class="bgImage">
+                    <p class="locationCost txt-water char-big">🌢🌢</p>
+                    <div class="flex-column">
+                      <p class="txt-shadow header">Mountain</p>
+                      <p>Big pile of rocks</p>
+                    </div>
+                  </div>
+                  <div class="location flex-row">
+                    <img src="resources/img/areas/grove.png" class="bgImage">
+                    <p class="locationCost txt-water char-big">🌢</p>
+                    <div class="flex-column">
+                      <p class="txt-shadow header">Grove</p>
+                      <p>Full of wonder</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="door rotate-flip" style="left:0;bottom:10px"></div>
             </div>
           </div>
-          <div class="room smallRoom titleParent" style="margin-right:400px">
-            <div class="title">
-              <p class="header headerTwo">Grove, Home</p>
-            </div>
+          <div class="introDisplay hidden" id="introDisplay">
           </div>
-          <div class="room titleParent">
-            <div class="title">
-              <p class="header headerTwo">Grove, Root</p>
+          <div class="roomDisplay fill flex-center flex-column hidden" id="roomDisplay">
+            <div class="roomInfoDisplay glass-bg hidden">
+              <p class="header">Amoung</p>
+              <hr>
+              <p>Ancient holder of the Imposter Susser</p>
             </div>
-          </div>
-          <div class="room smallRoom titleParent">
-            <div class="title">
-              <p class="header headerTwo">Grove, Core <span class="txt-lumen">+🟆</span></p>
+            <div class="positioner flex-center" id="roomPositioner" style="top:0;left:0;">
+              <div class="flex-column">
+                <div class="flex-row">
+                  <div class="room invis" style="--width:1"></div>
+                  <div class="flex-column">
+                    <div class="flex-row">
+                      <div class="flex-column">
+                        <div class="room invis" style="--width:2"></div>
+                        <div class="room uninteractableRoom titleParent" style="--width:2">
+                          <p class="header headerTwo title">Leaves</p>
+                          <div class="roomGraphic room-leaf"></div>
+                        </div>
+                      </div>
+                      <div class="room uninteractableRoom titleParent" style="--width:4;--height:2">
+                        <p class="header headerTwo title">Leaves</p>
+                        <div class="roomGraphic room-leaf"></div>
+                      </div>
+                    </div>
+                    <div class="flex-row">
+                      <div class="room invis" style="--width:1"></div>
+                      <div class="room titleParent" style="--width:3">
+                        <p class="header headerTwo title">Branches</p>
+                        <div class="roomGraphic room-bark"></div>
+                      </div>
+                      <div class="room uninteractableRoom titleParent" style="--width:3">
+                        <p class="header headerTwo title">Leaves</p>
+                        <div class="roomGraphic room-leaf"></div>
+                      </div>
+                    </div>
+                    <div class="room titleParent" style="--width:2">
+                      <p class="header headerTwo title">Body</p>
+                      <div class="roomGraphic room-bark"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="room titleParent" style="--width:4;--height:1">
+                  <p class="header headerTwo title">Base</p>
+                  <div class="roomGraphic room-bark"></div>
+                </div>
+                <div class="room titleParent" style="--width:4;--height:2">
+                  <p class="header headerTwo title">Root</p>
+                  <div class="roomGraphic room-root room-openDepths"></div>
+                </div>
+              </div>
             </div>
-          </div>
+        </div>
         </div>
       </div>
     </div>

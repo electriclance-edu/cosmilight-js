@@ -1,0 +1,27 @@
+/*-----------
+ROOM SHAPES
+-------------*/
+.room-openAir {
+  -webkit-mask-image: linear-gradient(to top, black 40%, transparent 95%);
+}
+.room-openDepths {
+  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 95%);
+}
+/*-----------
+ROOM TYPES
+-------------*/
+.room-cave {
+  filter:saturate(0) brightness(0.9);
+}
+.room-leaf {
+  filter:hue-rotate(60deg) saturate(1.3) brightness(0.6);
+}
+.room-concrete {
+  filter:hue-rotate(-60deg) saturate(1.3);
+}
+.room-bark {
+  filter:hue-rotate(-140deg) saturate(0.5) brightness(0.4) contrast(1.1);
+}
+.room-root {
+  filter:hue-rotate(-130deg) saturate(1.3) brightness(0.3);
+}

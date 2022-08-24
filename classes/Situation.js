@@ -1,19 +1,19 @@
-class Event {
-  static events = {};
+class Situation {
+  static situations = {};
 
-  constructor(id,biome,imgUrl = "areas/void.png",header,paragraphs,consequences,options) {
+  constructor(id,biome,imgUrl = "areas/void.png",header,paragraphs,consequences,choices) {
     this.id = id;
     this.biome = biome;
     this.imgUrl = imgUrl;
     this.header = header;
     this.paragraphs = paragraphs;
     this.consequences = consequences;
-    this.options = options;
+    this.choices = choices;
 
-    Event.events[id] = this;
+    Situation.situations[id] = this;
   }
-  static generateMinorEvents() {
-    new Event(
+  static generateMinorSituations() {
+    new Situation(
       "template",
       "biome",
       "areas/void.png",
@@ -30,7 +30,7 @@ class Event {
         new Consequence("addResource",["water","1"])
       ],
       [
-        new EventOption(
+        new SituationChoice(
           "Option One Header",
           "Option One Description",
           "Option One Grey Description",
@@ -41,12 +41,12 @@ class Event {
             new Condition("conditionType","param")
           ]
         ),
-        new EventOption(
+        new SituationChoice(
           "Option Two Header",
           "Option Two Description",
           false,
           [
-            new Consequence("endEvent"),
+            new Consequence("endSituation"),
             new Consequence("addResource",["water","3"])
           ],
           [
@@ -55,7 +55,7 @@ class Event {
         )
       ]
     )
-    new Event(
+    new Situation(
       "flowerPatch",
       "plains",
       "areas/grove.png",
@@ -69,7 +69,7 @@ class Event {
       ],
       [],
       [
-        new EventOption(
+        new SituationChoice(
           "Water the flowers.",
           "Their color may yet return.",
           false,
@@ -79,7 +79,7 @@ class Event {
           ],
           new Condition("hasResources",["water",2])
         ),
-        new EventOption(
+        new SituationChoice(
           "Harvest the flowers.",
           "The flowers' faint glow tells you of lumen hidden within.",
           "The thorns of the flowers will hurt.",
@@ -94,7 +94,7 @@ class Event {
   }
 }
 
-/* MINOR EVENT IDEAS
+/* MINOR Situation IDEAS
 plains - flowers
 plains - bones
 plains - cave
@@ -112,7 +112,7 @@ wasteland - observatory
 mountain - glittercave
 mountain - massive rock
 mountain - old cabin
-MAJOR EVENT IDEAS
+MAJOR Situation IDEAS
 forest - smth to explain why fruits exist
 forest - cabin of the Chieftain
 wasteland - the facility

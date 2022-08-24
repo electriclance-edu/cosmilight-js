@@ -16,6 +16,7 @@ class Resource {
     new Resource("water","Water","🌢","big",["flask","flasks"]);
     new Resource("lumen","Lumen","🟆","med",["droplet","droplets"]);
     new Resource("thread","Thread","≋","tiny",["spool","spools"]);
+    new Resource("nectar","Nectar","🟐","med",["shard","shards"]);
     new Resource("seed","Seed","⚉","med",["seed","seeds"]);
     new Resource("steelsilk","Steelsilk","◆","med",false);
     new Resource("sableSap","Sable Sap","✾","small",false);
@@ -23,6 +24,7 @@ class Resource {
     new Resource("radiantCore","Radiant Core","✠","small",false);
   }
 }
+//🎕🟐🞺🞛🞇🟂
 /*
 HOW TO CREATE A RESOURCE
 - Create a new Resource() line in Resource.generateResources()

@@ -7,18 +7,36 @@ class Player {
       y: pos_y
     }
     this.resourceAmounts = {};
+    this.tags = [];
+
+    if (debug) {
+      this.addTag("debug");
+    }
   }
-  initializeResources() {
+  initializeResources(amt = 0) {
     Resource.resources.forEach(function(resource) {
-      Player.player.resourceAmounts[resource.id] = 0;
+      Player.player.resourceAmounts[resource.id] = amt;
     });
   }
   incrementResource(id,amt) {
-    Player.player.resourceAmounts[id] = amt;
+    Player.player.resourceAmounts[id] += amt;
+    updateResource(id,Player.player.resourceAmounts[id]);
+  }
+  hasResource(id,amt) {
+    return Player.player.resourceAmounts[id] >= amt;
   }
   setPos(x,y) {
     this.pos = {x:x,y:y};
-    document.getElementById("debug_position-x").innerHTML = "x: "+x;
-    document.getElementById("debug_position-y").innerHTML = "y: "+y;
+    document.getElementById("debug_position-x").innerHTML = "x: " + x;
+    document.getElementById("debug_position-y").innerHTML = "y: " + y;
+  }
+  hasTag(tag) {
+    return this.tags.includes(tag);
+  }
+  addTag(tag) {
+    this.tags.push(tag);
+  }
+  removeTag(tag) {
+    this.tags.splice(this.tags.indexOf(tag),1);
   }
 }

@@ -1,20 +1,45 @@
 class Condition {
-  constructor(type,parameters) {
+  constructor(type,param) {
     this.type = type;
-    this.parameters = parameters;
+    this.param = param;
   }
   //returns whether or not the condition's type and parameters are satisfied
   //ie. new Condition("resource",["water",1]) will return true if the player has >=1 water
   isSatisfied() {
-    return false;
+    if (!Object.keys(conditionChecks).includes(this.type)) {
+      console.log(`Condition.isSatisfied(): function corresponding to type '${this.type}' does not exist`);
+      return false;
+    }
+    return conditionChecks[this.type](this.param);
+  }
+  static setSatisfied(conditionSet) {
+    if (conditionSet == false) {
+      return true;
+    }
+
+    var allConditionsSatisfied = true;
+    if (Array.isArray(conditionSet)) {
+      for (var i = 0; i < conditionSet.length; i++) {
+         if (!conditionSet[i].isSatisfied()) {
+           allConditionsSatisfied = false;
+           break;
+         }
+      }
+      return allConditionsSatisfied;
+    } else {
+      return conditionSet.isSatisfied();
+    }
   }
 }
 
 var conditionChecks = {
-  hasTag:(tagName)=>{
-    return false;
+  hasTag:(tag)=>{
+    return Player.player.hasTag(tag);
   },
-  hasResources:(param)=>{
-    return false;
+  hasResource:(param)=>{
+    return Player.player.hasResource(param.id,param.amt);
+  },
+  none:()=>{
+    return true;
   }
 }

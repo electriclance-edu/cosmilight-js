@@ -99,7 +99,7 @@ class World {
       var tiles = this.getSquare(radius);
       for (var i = 0; i < tiles.length; i++) {
         var randIndex = randInt(tiles.length);
-        if (this.getTile(tiles[randIndex][0],tiles[randIndex][1]).getBiome().isSpawnable) {
+        if (this.getTile(tiles[randIndex][0],tiles[randIndex][1]).getBiome().getTag("isSpawnable")) {
           return tiles[randIndex];
         }
         tiles.splice(randIndex,1);

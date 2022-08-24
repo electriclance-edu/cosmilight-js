@@ -5,8 +5,11 @@
   text-shadow:0 3px 10px rgba(80,80,255,0.8),
               0 3px 15px rgba(200,200,255,0.5);
 }
+.txt-nectar  {
+  color:rgb(255,195,85);
+}
 .txt-lumen  {
-  color:rgb(255,240,180);
+  color:rgb(240,230,255);
 }
 .txt-thread  {
   color:rgb(255,70,100);
@@ -39,6 +42,12 @@
 .txt-grey {
   color:rgb(180,180,180);
 }
+.txt-darkGrey {
+  color:rgb(140,140,140);
+}
 .txt-italic {
   font-style:italic;
+}
+.txt-center {
+  text-align:center;
 }

@@ -1,18 +1,65 @@
 class Biome {
   static biomes = [];
 
-  constructor(id,title,desc,movements,isSpawnable = false,traversalCost = ["water",1],traversalRequirements = "none") {
+  constructor(
+    id,
+    title,
+    desc,
+    explorationLogText,
+    tags = {isSpawnable:false},
+    resourceConditions = new Condition("hasResource",{id:"water",amt:1}),
+    consequences = new Consequence("addResource",{id:"water",amt:-1}),
+    conditions = false,
+    failConsequences = false
+  ) {
     this.id = id;
     this.title = title;
     this.desc = desc;
-    this.movements = movements;
-    this.isSpawnable = isSpawnable;
-    this.traversalCost = traversalCost;
-    this.traversalRequirements = traversalRequirements;
+    this.explorationLogText = explorationLogText;
+    this.tags = tags;
+    this.resourceConditions = resourceConditions;
+    this.consequences = consequences;
+    this.conditions = conditions;
+    this.failConsequences = failConsequences;
 
     this.hasBeenLogged = false;
 
     Biome.biomes.push(this)
+  }
+  getTag(name) {
+    if (this.tags[name]) {
+      return true;
+    } else if (!this.tags[name]) {
+      return false;
+    } else {
+      console.log(`Biome.getTag(): tag with name '${name}' does not exist`);
+      console.log(this.tags);
+    }
+  }
+  triggerFailConsequences() {
+    Consequence.triggerSet(this.failConsequences);
+  }
+  triggerConsequences() {
+    Consequence.triggerSet(this.consequences);
+  }
+  resourcesSatisfied() {
+    return Condition.setSatisfied(this.resourceConditions);
+  }
+  conditionsSatisfied() {
+    return Condition.setSatisfied(this.conditions);
+  }
+  getDesc() {
+    if (!Array.isArray(this.desc)) {
+      return this.desc;
+    } else {
+      return this.desc[0];
+      // this.desc.splice(0,1); the hell is this code doing here? unreachable
+    }
+  }
+  getFlavorText() {
+    this.explorationLogText.push(this.explorationLogText[0]);
+    this.explorationLogText.splice(0,1);
+    return this.explorationLogText[0];
   }
   static getBiome(id) {
     var biome = false;
@@ -34,22 +81,22 @@ class Biome {
         "The grass rustles in the wind.",
         "You pass by a patch of dead flowers."
       ],
-      true
+      {isSpawnable:true}
     );
     new Biome(
       "forest",
       "Forest",
-      "From a distance, a faint glow from multicolored bioluminescent plants illuminates a grand canopy of trees. In these desolate lands lit by starlight, these <b>Forests</b> may be the last bastions of light.",
+      "From a distance, the faint glow of bioluminescent plants illuminates a grand canopy of trees in shades of pink, blue, and lumenyellow. In these desolate lands lit by cosmic light, these <b>Forests</b> may be the last bastions of life's radiance.",
       [
         "Leaves rustle loudly above you.",
         "Your steps crush the undergrowth.",
         "You part fern and leaf as you walk.",
-        "You mistake the wind for a howling wolf.",
-        "Light illuminates your path.",
+        "You mistake the wind for a howling wolf hidden in the trees.",
+        "The faint glow of dense plants illuminates your path.",
         "You pass by a massive tree, covered with faintly glowing moss.",
         "You pass through a flowing river, lit by glowing bulbs of fruit.",
       ],
-      false
+      {isSpawnable:true}
     );
 
     new Biome(
@@ -57,13 +104,14 @@ class Biome {
       "Desert",
       "The last areas of land to be consumed by the darkness, as it was thought that there was nothing here to consume. But life did live here, the last humans of the <b>Desert</b>-born civilization of the Firefly.",
       [
-        "The winds howl past you.",
+        "The dusty winds howl past you.",
         "Your feet sinks slightly into the sand with each step.",
         "A dust storm blows in the horizon, dimly lit by moonlight.",
         "You pass by a boulder, rubbed smooth by sand and wind."
       ],
-      true,
-      ["water",2]
+      {isSpawnable:true},
+      new Condition("hasResource",{id:"water",amt:2}),
+      new Consequence("addResource",{id:"water",amt:-2})
     );
     new Biome(
       "wasteland",
@@ -75,8 +123,15 @@ class Biome {
         "Thin metal foil blows in the wind, glittering yet toxic.",
         "You walk through black sand dunes."
       ],
-      false,
-      ["water",2,"lumen",1]
+      {isSpawnable:true},
+      [
+        new Condition("hasResource",{id:"water",amt:2}),
+        new Condition("hasResource",{id:"lumen",amt:1})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-2}),
+        new Consequence("addResource",{id:"lumen",amt:-1})
+      ]
     );
 
     new Biome(
@@ -89,11 +144,19 @@ class Biome {
         "You walk past the pitiful remains of what was once a house.",
         "The cold bites through your clothing."
       ],
-      false,
-      ["water",1,"thread",1],
+      {isSpawnable:false},
       [
-        new Condition("research",["mountainClimbing"])
-      ]
+        new Condition("hasResource",{id:"water",amt:2}),
+        new Condition("hasResource",{id:"thread",amt:1})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-2}),
+        new Consequence("addResource",{id:"thread",amt:-1})
+      ],
+      [
+        new Condition("hasTag","mountainClimbing")
+      ],
+      new Consequence("logWithStyle",{txt:"A tall climb blocks your path. You don't have the equipment to go further.",classes:["grey"]})
     );
     new Biome(
       "highPeak",
@@ -105,11 +168,19 @@ class Biome {
         "The glittering stars above are repeatedly obscured by cloud and dust.",
         "Under the leaves of impossibly-resillient trees you find brief respite from the continuous battering of wind."
       ],
-      false,
-      ["water",2,"thread",2],
+      {isSpawnable:false},
       [
-        new Condition("research",["mountainClimbing"])
-      ]
+        new Condition("hasResource",{id:"water",amt:2}),
+        new Condition("hasResource",{id:"thread",amt:2})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-2}),
+        new Consequence("addResource",{id:"thread",amt:-2})
+      ],
+      [
+        new Condition("hasTag","mountainClimbing")
+      ],
+      new Consequence("logWithStyle",{txt:"A steep, dangerous clifface blocks your path as dust rains from above. Beyond, you hear the raging winds of powerful snowstorms. Could anything survive up there?",classes:["grey"]})
     );
 
     new Biome(
@@ -123,11 +194,19 @@ class Biome {
         "In the distance you almost seem to see movement under the water, but it fades as an illusion would.",
         "The splash of water below your steps is all that accompanies you in this shallow sea."
       ],
-      false,
-      ["water",1,"lumen",1],
+      {isSpawnable:false},
       [
-        new Condition("research",["seawalk"])
-      ]
+        new Condition("hasResource",{id:"water",amt:1}),
+        new Condition("hasResource",{id:"lumen",amt:1})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-1}),
+        new Consequence("addResource",{id:"lumen",amt:-1})
+      ],
+      [
+        new Condition("hasTag","seawalker")
+      ],
+      new Consequence("logWithStyle",{txt:"A vast body of water stretches out before you. It's shallow, but the water itself seems to seep into flesh and bone, dissolving it slowly. Protection is warranted.",classes:["grey"]})
     );
     new Biome(
       "sea",
@@ -139,12 +218,21 @@ class Biome {
         "Rushes of warm and cold air threaten to form spouts beside you.",
         "You pass through especially turbulent water, gurgling as if some massive beast lay below."
       ],
-      false,
-      ["water",1,"lumen",1],
+      {isSpawnable:false},
       [
-        new Condition("research",["sailing"]),
-        new Condition("tag",["hasBoat"])
-      ]
+        new Condition("hasResource",{id:"water",amt:1}),
+        new Condition("hasResource",{id:"lumen",amt:1})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-1}),
+        new Consequence("addResource",{id:"lumen",amt:-1}),
+        new Consequence("damageBoat",{amt:1,chance:10})
+      ],
+      [
+        new Condition("hasTag","sailing"),
+        new Condition("hasBoat")
+      ],
+      new Consequence("logWithStyle",{txt:"You can't see the bottom of the black water here. It seems anything, no matter how buoyant, will sink to the bottom. What could cross this?",classes:["grey"]})
     );
     new Biome(
       "abyssalWaters",
@@ -154,29 +242,47 @@ class Biome {
         "Powerful currents rock below you, almost humming with force and danger.",
         "Below your boat is an abyss of darkness without a hint of blue, one that threatens to devour you whole.",
         "Your lumenlight flickers as the eminent light of the moon pours across the horizon.",
-        "Thunderstorms come and go in flashes as you sail through these dark waters."
+        "Thunderstorms come and go in flashes as you sail through these dark waters.",
+        "Water thrashes against your boat in an almost animal way."
       ],
-      false,
-      ["water",1,"lumen",2],
+      {isSpawnable:false},
       [
-        new Condition("research",["sailing"]),
-        new Condition("tag",["hasBoat"])
-      ]
+        new Condition("hasResource",{id:"water",amt:1}),
+        new Condition("hasResource",{id:"lumen",amt:2})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-1}),
+        new Consequence("addResource",{id:"lumen",amt:-2}),
+        new Consequence("damageBoat",{amt:1,chance:30})
+      ],
+      [
+        new Condition("hasTag","sailing"),
+        new Condition("hasBoat")
+      ],
+      new Consequence("logWithStyle",{txt:"In the distance, towering black waves and swirling whirlpools cast shadows in the moonlight, threatening to crush and devour anything that might step a single foot into their influence. You feel as if you look upon a domain of pure darkness.",classes:["grey"]})
     );
 
     new Biome(
       "center",
       "Center of the World",
-      "At the <b>center</b> of the world lies the ruins of a tower, one that reached beyond the sky.",
+      "At the <b>center</b> of the world lies the ruins of a tower, ruins that once reached beyond the sky.",
       [
         "big tower Poggers",
         "there is a tower among us"
       ],
-      false,
-      ["water",1,"thread",1],
+      {isSpawnable:false},
       [
-        new Condition("tag",["debug"])
-      ]
+        new Condition("hasResource",{id:"water",amt:2}),
+        new Condition("hasResource",{id:"thread",amt:1})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-2}),
+        new Consequence("addResource",{id:"thread",amt:-1})
+      ],
+      [
+        new Condition("hasTag","debug")
+      ],
+      new Consequence("logWithStyle",{txt:"At the <b>center</b> of the world lies the ruins of a tower, ruins that once reached beyond the sky.",classes:["grey"]})
     );
     var cityDescriptions = [
       "Within these ruins echo a story old and nearly forgotten. Humanity had lived here, powerful and resplendent, enjoying the blessings of life and machine and magic.",
@@ -190,8 +296,15 @@ class Biome {
       [
         "Smooth towering architecture marks here the greatest technological civilization of Humanity, the <b>Fireflies</b>."
       ],
-      false,
-      ["water",1,"lumen",3]
+      {isSpawnable:false},
+      [
+        new Condition("hasResource",{id:"water",amt:1}),
+        new Condition("hasResource",{id:"lumen",amt:3})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-1}),
+        new Consequence("addResource",{id:"lumen",amt:-3})
+      ]
     );
     new Biome(
       "anuraCity",
@@ -200,41 +313,32 @@ class Biome {
       [
         "Surrounded and intertwined with leaf, tree, and nature, the most powerful magical civilization of Humanity had lived here, the <b>Anura</b>."
       ],
-      false,
-      ["water",1,"lumen",3]
+      {isSpawnable:false},
+      [
+        new Condition("hasResource",{id:"water",amt:1}),
+        new Condition("hasResource",{id:"lumen",amt:3})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-1}),
+        new Consequence("addResource",{id:"lumen",amt:-3})
+      ]
     );
     new Biome(
       "somnolentCity",
       "Somnolent City",
       cityDescriptions,
       [
-        "Floating with the tides, the ancient worldsailing cities of the <b>Somnolents</b> had observed the actions of all around them. Now, these cities lie as wrecks, artificial islands in the middle of deep sea."
+        "Floating with the tides, the ancient worldsailing cities of the <b>Somnolents</b> had observed the actions of all around them. Now, these cities lie as wrecks, artificial islands in the middle of deep dark sea."
       ],
-      false,
-      ["water",1,"lumen",3]
+      {isSpawnable:false},
+      [
+        new Condition("hasResource",{id:"water",amt:1}),
+        new Condition("hasResource",{id:"lumen",amt:3})
+      ],
+      [
+        new Consequence("addResource",{id:"water",amt:-1}),
+        new Consequence("addResource",{id:"lumen",amt:-3})
+      ]
     );
-  }
-  isTraversable() {
-    var allConditionsSatisfied = true;
-    if (this.traversalRequirements != "none") {
-      for (var i = 0; i < this.traversalRequirements.length; i++) {
-         if (!this.traversalRequirements[i].isSatisfied()) {
-           allConditionsSatisfied = false;
-           break;
-         }
-      }
-    }
-    return allConditionsSatisfied;
-  }
-  getDesc() {
-    if (!Array.isArray(this.desc)) {
-      return this.desc;
-    } else {
-      return this.desc[0];
-      this.desc.splice(0,1);
-    }
-  }
-  getMovementDesc() {
-    return this.movements[randInt(this.movements.length)];
   }
 }

@@ -2,72 +2,78 @@
 GLOBALS
 --------------*/
 var isotileWidth, isotileHeight, isotilePadding;
-var isotilePositioner = document.getElementById("isotilePositioner");
+
 var chatlog = document.getElementById("chatlog");
-var uiEventState = false;
-var walkAudio;
-/*--------------
+var isotilePositioner = document.getElementById("isotilePositioner");
+var roomPositioner = document.getElementById("roomPositioner");
+var situationContainer = document.getElementById("situationContainer");
+var displays = [];
+var currentDisplay = "";
+
+var walkTransitionLength = 1900;
+var lastWarnedLocations = [];
+
+var audioInit = false;
+var audioAmbience;
+var audioVolume = 1;
+/*
+--------------
 LISTENERS
---------------*/
+--------------
+*/
 document.addEventListener('click', (event) => {
   if (event.target.classList.contains('button')) {
     sound('button');
   }
+  if (event.target.classList.contains('room')) {
+    recenterRoomDisplay(event.target);
+  }
+  if (!audioInit) {
+    audioInit = true;
+    initializeAudio();
+  }
 })
 document.addEventListener('keydown', function(e) {
-  switch (e.keyCode) {
-      case 37:
-          var x = Player.player.pos.x;
-          var y = Player.player.pos.y;
-          x--;
-          movePlayer(x,y,getTileElem(x,y));
-          break;
-      case 38:
-          var x = Player.player.pos.x;
-          var y = Player.player.pos.y;
-          y++;
-          movePlayer(x,y,getTileElem(x,y));
-          break;
-      case 39:
-          var x = Player.player.pos.x;
-          var y = Player.player.pos.y;
-          x++;
-          movePlayer(x,y,getTileElem(x,y));
-          break;
-      case 40:
-          var x = Player.player.pos.x;
-          var y = Player.player.pos.y;
-          y--;
-          movePlayer(x,y,getTileElem(x,y));
-          break;
+  if (event.repeat) {
+    return;
+  }
+
+  if (currentDisplay == "mapDisplay") {
+    var key = e.code;
+    var x = Player.player.pos.x;
+    var y = Player.player.pos.y;
+    e.preventDefault();
+    if (key == "ArrowLeft" || key == "KeyA") {
+      x--;
+    } else if (key == "ArrowUp" || key == "KeyW") {
+      y++;
+    } else if (key == "ArrowRight" || key == "KeyD") {
+      x++;
+    } else if (key == "ArrowDown" || key == "KeyS") {
+      y--;
+    }
+    movePlayer(x,y,getTileElem(x,y));
   }
 });
-/*--------------
-ONLOAD
---------------*/
+/*
+--------------
+ONLOAD FUNCTIONS
+--------------
+*/
 getCSSVariables();
 initializeDebug();
-initializeAudio();
 initialize();
-
-function rawSeededRand(){};
-
 function initializeDebug() {
   document.getElementById("debug_muteState").innerHTML = mute ? 'unmute' : 'mute';
 }
 function initialize() {
   Biome.generateBiomes();
   Resource.generateResources();
-  Event.generateMinorEvents();
+  Situation.generateMinorSituations();
   createResourceElements();
 
-  var seed;
-  if (debug) {
-    seed = 2;
-  } else {
-    var seed = randInt(1000);
-    console.log(`seed: ${seed}`);
-  }
+  var seed = randInt(1000);
+  console.log(`seed: ${seed}`);
   document.getElementById("debug_worldSeed").innerHTML = "seed: " + seed;
   rawSeededRand = new Math.seedrandom(seed);
 
@@ -80,21 +86,78 @@ function initialize() {
   setHoverState(startTileElem,true);
   movePlayer(start[0],start[1],startTileElem,true);
 
-  Player.player.initializeResources();
-  Player.player.incrementResource("water",5);
-  Player.player.incrementResource("lumen",6);
-  Player.player.incrementResource("thread",10);
-  Player.player.incrementResource("seed",1);
+  if (!startWithResources) {
+    Player.player.initializeResources();
+    Player.player.incrementResource("water",5);
+    Player.player.incrementResource("lumen",5);
+    Player.player.incrementResource("thread",3);
+    Player.player.incrementResource("nectar",1);
+    Player.player.incrementResource("seed",1);
+  } else {
+    Player.player.initializeResources(10);
+  }
   updateResources();
+
+  displays = document.getElementById("displayParent").children;
+  displayDisplay(startDisplay);
+
+  toggleDebugMenu(debug);
+  if (mute) {
+    audioVolume = 0;
+  }
+
+  //REMOVE
+  triggerSituation('flowerPatch')
+}
+function toggleDebugMenu(state = false) {
+  document.getElementById("debugMenu").style.display = ["none","block"][state ? 1 : 0];
+  document.getElementById("debugMenuHidden").style.display = ["none","block"][state ? 0 : 1];
 }
 function initializeAudio() {
-  walkAudio = new Audio("resources/audio/walk2.mp3");
+  audioAmbience = new Audio("resources/audio/high-ambience.mp3");
+  audioAmbience.volume = audioVolume*0.1;
+  audioAmbience.loop = true;
+  audioAmbience.play();
 }
 function getCSSVariables() {
   var style = getComputedStyle(document.body);
   isotilePadding = parseInt(style.getPropertyValue("--isotilePadding").slice(0,-2));
   isotileWidth = parseInt(style.getPropertyValue("--rawIsotileWidth").slice(0,-2));
   isotileHeight = isotileWidth/2;
+}
+/*
+--------------
+GENERAL GUI FUNCTIONS
+--------------
+*/
+function displayDisplay(id) {
+  currentDisplay = id;
+  for (var i = 0; i < displays.length; i++) {
+    if (!displays[i].classList.contains("hidden")) {
+      displays[i].classList.add("hidden");
+    }
+  }
+  document.getElementById(id).classList.remove("hidden");
+}
+/*
+--------------
+STRUCTURE FUNCTIONS
+--------------
+*/
+function toggleStructureMenu() {
+  //toggle right menu
+}
+function recenterRoomDisplay(elem) {
+  var positionerRect = roomPositioner.getBoundingClientRect();
+  var positionerX = (positionerRect.right + positionerRect.left)/2;
+  var positionerY = (positionerRect.top + positionerRect.bottom)/2;
+
+  var rect = elem.getBoundingClientRect();
+  var xOffset = -1 * ((rect.right + rect.left)/2 - positionerX);
+  var yOffset = -1 * ((rect.top + rect.bottom)/2 - positionerY);
+
+  roomPositioner.style.top = yOffset + "px";
+  roomPositioner.style.left = xOffset + "px";
 }
 /*
 --------------
@@ -111,49 +174,60 @@ function logText(string,classNames = false) {
   }
   chatlog.prepend(elem);
 }
-function triggerEvent(eventId) {
-  var eventObj = Event.events[eventId];
-  //check if event is triggerable
-  triggerUIEventState(true);
-  logEvent(eventObj);
-  //trigger all consequences of the event
+function triggerSituation(id) {
+  var situation = Situation.situations[id];
+  //check if situation is triggerable
+  displaySituation(situation);
+  //trigger all consequences of the situation
 }
-function triggerUIEventState(state = !uiEventState) {
-  if (state) {
-    document.getElementById("hideOnEvent").style.transitionTimingFunction = "cubic-bezier(0, 0.61, 0.33, 1)";
-    chatlog.parentNode.classList.add("tag-chatlogParent-eventOccurring");
-  } else {
-    document.getElementById("hideOnEvent").style.transitionTimingFunction = "cubic-bezier(0.61, 0.02, 0.97, 0.43)";
-    chatlog.parentNode.classList.remove("tag-chatlogParent-eventOccurring");
+function toggleDarkScreen(state, msg = false, transitionLength = false) {
+  document.getElementById("darkenedScreen").style.opacity = state ? 1 : 0;
+
+  if (msg != false) {
+    document.getElementById("darkenedScreenMsg").innerHTML = msg;
   }
-  document.getElementById("eventDarkenScreen").style.opacity = state ? 1 : 0;
-  uiEventState = state;
+  var progressBar = document.getElementById("darkenedScreenProgress");
+  if (transitionLength != false) {
+    progressBar.style.transitionDuration = "0s";
+    progressBar.style.width = "0%";
+    progressBar.style.opacity = 1;
+    setTimeout(()=>{
+      progressBar.style.transitionDuration = transitionLength;
+      progressBar.style.width = "100%";
+    },2);
+  } else {
+    progressBar.style.transitionDuration = "0s";
+    progressBar.style.width = "0%";
+    progressBar.style.opacity = 0;
+  }
 }
-function logEvent(eventObj) {
-  var eventDiv = document.createElement("div");
-  eventDiv.classList.add("loggedEvent");
+function displaySituation(situation) {
+  situationContainer.innerHTML = 0;
+
+  var situationDiv = document.createElement("div");
+  situationDiv.classList.add("situation");
   var img = document.createElement("img");
-  img.src = "resources/img/" + eventObj.imgUrl;
+  img.src = "resources/img/" + situation.imgUrl;
   var header = document.createElement("p");
   header.classList.add("header");
-  header.innerHTML = eventObj.header;
+  header.innerHTML = situation.header;
 
-  eventDiv.appendChild(img);
-  eventDiv.appendChild(header);
+  situationDiv.appendChild(img);
+  situationDiv.appendChild(header);
 
-  for (var i = 0; i < eventObj.paragraphs.length; i++) {
-    eventDiv.appendChild(createTextObject(eventObj.paragraphs[i]));
+  for (var i = 0; i < situation.paragraphs.length; i++) {
+    situationDiv.appendChild(createTextObject(situation.paragraphs[i]));
   }
 
-  var eventOptions = document.createElement("div");
-  eventOptions.classList.add("eventOptions");
+  var choices = document.createElement("div");
+  choices.classList.add("situationChoices");
 
-  for (var i = 0; i < eventObj.options.length; i++) {
-    eventOptions.appendChild(createEventOptionObject(eventObj.options[i]));
+  for (var i = 0; i < situation.choices.length; i++) {
+    choices.appendChild(createSituationOptionObject(situation.choices[i]));
   }
-  eventDiv.appendChild(eventOptions);
+  situationDiv.appendChild(choices);
 
-  chatlog.prepend(eventDiv);
+  situationContainer.appendChild(situationDiv);
 }
 function createTextObject(data) {
   var elem = document.createElement("p");
@@ -167,23 +241,23 @@ function createTextObject(data) {
   }
   return elem;
 }
-function createEventOptionObject(eventOption) {
-  var eventOptionElement = document.createElement("div");
-  eventOptionElement.classList.add("button");
-  var header = createTextObject(eventOption.header);
+function createSituationOptionObject(situationOption) {
+  var situationOptionElement = document.createElement("div");
+  situationOptionElement.classList.add("button");
+  var header = createTextObject(situationOption.header);
   header.classList.add("header");
-  var desc = createTextObject(eventOption.desc);
-  eventOptionElement.appendChild(header);
-  eventOptionElement.appendChild(desc);
+  var desc = createTextObject(situationOption.desc);
+  situationOptionElement.appendChild(header);
+  situationOptionElement.appendChild(desc);
 
-  if (eventOption.greyDesc != false) {
-    var greyText = createTextObject(eventOption.greyDesc);
+  if (situationOption.greyDesc != false) {
+    var greyText = createTextObject(situationOption.greyDesc);
     greyText.classList.add("txt-grey");
     greyText.classList.add("smallText");
-    eventOptionElement.appendChild(greyText);
+    situationOptionElement.appendChild(greyText);
   }
 
-  return eventOptionElement;
+  return situationOptionElement;
 }
 /*
 --------------
@@ -294,12 +368,7 @@ function displayTile(x,y,isVoid = true) {
     return true;
   }
 
-  var elem;
-  if (tileData.structure != false) {
-    elem = createTileElem(x,y,tileData.getBiome(),isVoid,tileData.structure);
-  } else {
-    elem = createTileElem(x,y,tileData.getBiome(),isVoid);
-  }
+  var elem = createTileElem(x,y,tileData.getBiome(),isVoid);
   elem.style.transitionDelay = randFloat(0.3)+"s";
   elem.style.top = (isotileHeight/2)*x - (isotileHeight/2)*y + (isotilePadding*x - isotilePadding*y) + "px";
   setTimeout(()=>{
@@ -343,7 +412,7 @@ function displayAdjacents(x,y,isVoid) {
   displayTile(x,y+1,isVoid);
 }
 function updateTileFromVoid(elem) {
-  var graphic = elem.children[elem.children.length - 1];
+  var graphic = elem.children[elem.children.length - 1].children[0];
   if (graphic.classList.contains("isotile-void")) {
     graphic.classList.remove("isotile-void");
     elem.classList.add("titleParent");
@@ -367,11 +436,6 @@ function cull(x,y) {
     }
   }
 }
-//function that calculates the brightness of a tile
-function calcLight(x,y,distance,tile) {
-  var amplitude = distance/cullRadius - 1;
-  tile.style.filter = `brightness(${1.1 - Math.exp(4*amplitude)})`;
-}
 function movePlayer(x,y,tile,bypass = false) {
   var diff_x = Math.abs(Player.player.pos.x - x);
   var diff_y = Math.abs(Player.player.pos.y - y);
@@ -381,41 +445,83 @@ function movePlayer(x,y,tile,bypass = false) {
   if (((isAdjacent || godMode) && isNotSameTile) || bypass) {
     updateTileFromVoid(tile);
     var biome = World.world.getTile(x,y).getBiome();
-    if (biome.isTraversable() || godMode) {
-      sound("walk");
-      if (!biome.hasBeenLogged) {
-        logText(biome.getDesc(),["italic","strongGlow"]);
-        biome.hasBeenLogged = true;
-      } else {
-        logText(biome.getMovementDesc());
-      }
 
-      isotilePositioner.style.top = (isotileHeight/-2)*x - (isotileHeight/-2)*y - (isotilePadding*x - isotilePadding*y) + "px";
-      isotilePositioner.style.left = (isotileWidth/-2)*x + (isotileWidth/-2)*y - (isotilePadding*x + isotilePadding*y) + "px";
-      setHoverState(getTileElem(x,y),true);
-      setHoverState(getTileElem(Player.player.pos.x,Player.player.pos.y),false);
-      Player.player.setPos(x,y);
+    if ((biome.conditionsSatisfied() && biome.resourcesSatisfied() || World.world.getTile(x,y).isExplored) || godMode || bypass) {
+      lastWarnedLocations = [];
 
-      if (sightRadius == 0) {
-        displayAdjacents(x,y);
-      } else {
-        displayTileRectangle(x-sightRadius,y-sightRadius,x+sightRadius,y+sightRadius);
-        var actualRevealRadius;
-        if (revealRadius == 0) {
-          actualRevealRadius = sightRadius - 1;
+      var transitionLength = walkTransitionLength;
+      if (bypass || godMode) {
+        transitionLength = 0;
+      } else if (World.world.getTile(x,y).isExplored) {
+        transitionLength = 0;
+        if (Player.player.hasResource("water",1)) {
+          Player.player.incrementResource("water",-1);
         } else {
-          actualRevealRadius = revealRadius;
+          //percentage chance Player.player.damage(1);
+          logText("Thirst yay")
         }
-        revealTileRectangle(x-actualRevealRadius,y-actualRevealRadius,x+actualRevealRadius,y+actualRevealRadius);
+      } else {
+        biome.triggerConsequences();
+        sound("walk");
+        toggleDarkScreen(true,"Exploring new tile...",transitionLength/1000 + "s");
       }
-      cull(x,y);
+
+      setTimeout(()=>{
+        toggleDarkScreen(false);
+        document.getElementById(coordsToTileId(x,y)).classList.remove("unexploredIsotile");
+        //log biome stuff
+        if (!biome.hasBeenLogged) {
+          logText(biome.getDesc(),["italic","strongGlow","center"]);
+          biome.hasBeenLogged = true;
+        } else if (!World.world.getTile(x,y).isExplored) {
+          logText(biome.getFlavorText());
+        }
+        recenterMap(x,y);
+        //reveal surrounding tiles
+        if (sightRadius == 0) {
+          displayAdjacents(x,y);
+        } else {
+          displayTileRectangle(x-sightRadius,y-sightRadius,x+sightRadius,y+sightRadius);
+          var actualRevealRadius;
+          if (revealRadius == 0) {
+            actualRevealRadius = sightRadius - 1;
+          } else {
+            actualRevealRadius = revealRadius;
+          }
+          revealTileRectangle(x-actualRevealRadius,y-actualRevealRadius,x+actualRevealRadius,y+actualRevealRadius);
+        }
+        //hide tiles that are too far from render dist
+        cull(x,y);
+        World.world.getTile(x,y).isExplored = true;
+      },transitionLength);
+    } else {
+      for (var i = 0; i < lastWarnedLocations.length; i++) {
+        if (lastWarnedLocations[i][0] == x && lastWarnedLocations[i][1] == y) {
+          return;
+        }
+      }
+      lastWarnedLocations.push([x,y]);
+      if (!biome.conditionsSatisfied()) {
+        toggleDarkScreen(false);
+        biome.triggerFailConsequences();
+      } else if (!biome.resourcesSatisfied()) {
+        logText("You do not have the resources required to explore further.");
+      }
     }
   }
+}
+function recenterMap(x,y) {
+  isotilePositioner.style.top = (isotileHeight/-2)*x - (isotileHeight/-2)*y - (isotilePadding*x - isotilePadding*y) + "px";
+  isotilePositioner.style.left = (isotileWidth/-2)*x + (isotileWidth/-2)*y - (isotilePadding*x + isotilePadding*y) + "px";
+  setHoverState(getTileElem(x,y),true);
+  setHoverState(getTileElem(Player.player.pos.x,Player.player.pos.y),false);
+  Player.player.setPos(x,y);
 }
 function createTileElem(x,y,biome = Biome.getBiome("plains"),isVoid, obj_structure = false) {
   var tile = document.createElement("div");
   tile.id = `tile${x},${y}`;
   tile.classList.add("isotile");
+  tile.classList.add("unexploredIsotile");
   tile.setAttribute("data-x",x);
   tile.setAttribute("data-y",y);
   tile.onclick = function(){
@@ -431,16 +537,13 @@ function createTileElem(x,y,biome = Biome.getBiome("plains"),isVoid, obj_structu
   header.classList.add("header");
   header.innerHTML = biome.title;
   title.appendChild(header);
-  if (obj_structure != false) {
-    var structure = document.createElement("span");
-    structure.classList.add("greyText");
-    structure.classList.add("smallText");
-    structure.classList.add(obj_structure.colorClass);
-    structure.innerHTML = obj_structure.title;
-    title.appendChild(structure);
-  }
+  var cost = document.createElement("div");
+
+  title.appendChild(cost);
   tile.appendChild(title);
 
+  var tileGraphicEffect = document.createElement("div");
+  tileGraphicEffect.classList.add("tileGraphicEffect");
   var tileGraphic = document.createElement("div");
   tileGraphic.classList.add("tileGraphic");
   tileGraphic.classList.add("isotile-" + biome.id);
@@ -449,7 +552,8 @@ function createTileElem(x,y,biome = Biome.getBiome("plains"),isVoid, obj_structu
   } else {
     tile.classList.add("titleParent");
   }
-  tile.appendChild(tileGraphic);
+  tileGraphicEffect.appendChild(tileGraphic);
+  tile.appendChild(tileGraphicEffect);
 
   return tile;
 }
@@ -463,11 +567,14 @@ function sound(type) {
     return true;
   }
 
+  var audio;
   if (type == "button") {
-    new Audio("resources/audio/thockTwo.mp3").play();
+    audio = new Audio("resources/audio/thockTwo.mp3");
   } else if (type == "walk") {
-    //walkAudio.play();
+    audio = new Audio("resources/audio/walk2.mp3");
   }
+  audio.volume = audioVolume;
+  audio.play();
 }
 /*
 -----------------
@@ -510,3 +617,10 @@ function simplex(x,y,scale) {
 function dist(pointOne,pointTwo) {
   return Math.sqrt((pointOne[0] - pointTwo[0])**2 + (pointOne[1] - pointTwo[1])**2);
 }
+/*
+-----------------
+SPECIAL FUNCTIONS
+-----------------
+*/
+//Modified at initialization.
+function rawSeededRand(){};
