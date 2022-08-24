@@ -5,7 +5,7 @@ Affect Gameplay
 var sightRadius = 2; //affects how far land will be revealed. Default is 0, and will reveal only adjacent tiles.
 var cullRadius = 5;
 var godMode = false; //allows flying, skips tile transition animation
-const debug = false; //shows debug menu
+const debug = true; //shows debug menu
 const startWithResources = false; //starts player w 10 resources
 var mute = true;
 
