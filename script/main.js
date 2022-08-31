@@ -107,7 +107,7 @@ function initialize() {
   }
 
   //REMOVE
-  triggerSituation('flowerPatch')
+  displaySituation(Situation.situations["flowerPatch"]);
 }
 function toggleDebugMenu(state = false) {
   document.getElementById("debugMenu").style.display = ["none","block"][state ? 1 : 0];
@@ -178,6 +178,7 @@ function triggerSituation(id) {
   var situation = Situation.situations[id];
   //check if situation is triggerable
   displaySituation(situation);
+  Consequence.triggerSet(situation.consequences);
   //trigger all consequences of the situation
 }
 function toggleDarkScreen(state, msg = false, transitionLength = false) {
@@ -202,7 +203,7 @@ function toggleDarkScreen(state, msg = false, transitionLength = false) {
   }
 }
 function displaySituation(situation) {
-  situationContainer.innerHTML = 0;
+  situationContainer.innerHTML = "";
 
   var situationDiv = document.createElement("div");
   situationDiv.classList.add("situation");
@@ -223,7 +224,8 @@ function displaySituation(situation) {
   choices.classList.add("situationChoices");
 
   for (var i = 0; i < situation.choices.length; i++) {
-    choices.appendChild(createSituationOptionObject(situation.choices[i]));
+    var choice = createSituationChoiceObject(situation.choices[i],situation.id,i);
+    choices.appendChild(choice);
   }
   situationDiv.appendChild(choices);
 
@@ -241,116 +243,201 @@ function createTextObject(data) {
   }
   return elem;
 }
-function createSituationOptionObject(situationOption) {
-  var situationOptionElement = document.createElement("div");
-  situationOptionElement.classList.add("button");
-  var header = createTextObject(situationOption.header);
+function createSituationChoiceObject(situationChoice,id,index) {
+  var situationChoiceElement = document.createElement("div");
+  situationChoiceElement.classList.add("button");
+  situationChoiceElement.setAttribute("data-situation",id);
+  situationChoiceElement.setAttribute("data-situationChoiceIndex",index);
+  situationChoiceElement.onclick = function() {
+    Situation.getSituation(this.getAttribute("data-situation")).choices[this.getAttribute("data-situationChoiceIndex")].attemptTrigger();
+  }
+  var row = document.createElement("div");
+  row.classList.add("flex-row");
+  row.classList.add("flex-center");
+  var headerColumn = document.createElement("div");
+  headerColumn.classList.add("flex-column");
+  headerColumn.classList.add("flex-center");
+  var header = createTextObject(situationChoice.header);
   header.classList.add("header");
-  var desc = createTextObject(situationOption.desc);
-  situationOptionElement.appendChild(header);
-  situationOptionElement.appendChild(desc);
+  header.classList.add("normalText");
+  headerColumn.appendChild(header);
+  row.appendChild(headerColumn);
+  situationChoiceElement.appendChild(row);
 
-  if (situationOption.greyDesc != false) {
-    var greyText = createTextObject(situationOption.greyDesc);
+  var desc = createTextObject(situationChoice.desc);
+  desc.classList.add("txt-grey");
+  desc.classList.add("situationChoice-desc");
+  situationChoiceElement.appendChild(desc);
+
+  if (situationChoice.greyDesc != false) {
+    var greyText = createTextObject(situationChoice.greyDesc);
     greyText.classList.add("txt-grey");
     greyText.classList.add("smallText");
-    situationOptionElement.appendChild(greyText);
+    headerColumn.appendChild(greyText);
   }
 
-  return situationOptionElement;
+  var costConditions = situationChoice.getConditions("hasResource");
+  if (costConditions != false) {
+    for (var i = 0; i < costConditions.length; i++) {
+      var cost = createResourceAmtElement(Resource.resourcesByName[costConditions[i].param.id],costConditions[i].param.amt,true);
+      cost.classList.add("txt-shadowless");
+      row.appendChild(cost);
+    }
+  }
+
+  var rewardConsequences = situationChoice.getConsequences("addResource");
+  if (rewardConsequences != false) {
+    for (var i = 0; i < rewardConsequences.length; i++) {
+      var resource = Resource.resourcesByName[rewardConsequences[i].param.id];
+      var amtText = "+?";
+      if (rewardConsequences[i].param.hasOwnProperty("display")) {
+        amtText = rewardConsequences[i].param.display;
+      }
+      var rewardElem = createResourceAmtElement(resource,amtText,false);
+      rewardElem.classList.add("txt-shadowless");
+      row.appendChild(rewardElem);
+    }
+  }
+
+  return situationChoiceElement;
 }
 /*
 --------------
 RESOURCE FUNCTIONS
 --------------
 */
-function createResourceElements() {
-  var majorResourcesElement = document.getElementById("majorResources");
-  var rareResourcesParent = document.getElementById("rareResources");
+function createResourceAmtElement(resource,amt,isCost) {
+  var amtElement = document.createElement("div");
+  amtElement.classList.add("resourceAmt");
+  var count = document.createElement("div");
+  count.className = "resourceAmtCount header filter-denseShadow";
+  if (isCost) {
+    count.classList.add("txt-lightRed");
+    count.innerHTML = "-" + amt;
+  } else {
+    count.classList.add("txt-lightGreen");
+    count.innerHTML = "+" + amt;
+  }
+  var img = document.createElement("img");
+  img.classList.add("filter-denseShadow");
+  img.src = `resources/img/resources/${resource.name}.png`;
 
+  amtElement.appendChild(count);
+  amtElement.appendChild(img);
+
+  return amtElement;
+}
+function createResourceElements() {
+  var diamondParent = document.getElementById("resourceDiamonds");
+  var barsParent = document.getElementById("resourceBars");
   for (var i = 0; i < Resource.resources.length; i++) {
-    if (!Resource.resources[i].counter) {
-      rareResourcesParent.appendChild(createRareResourceElement(Resource.resources[i]));
+    let resource = Resource.resources[i];
+    console.log(resource);
+    if (resource.cap != false) {
+      console.log("cowabungus");
+      barsParent.appendChild(createResourceBarElement(resource));
     } else {
-      majorResourcesElement.appendChild(createMajorResourceElement(Resource.resources[i]));
+      diamondParent.appendChild(createResourceDiamondElement(resource));
     }
   }
+}
+function createResourceBarElement(resource) {
+  var elem = document.createElement("div");
+  elem.className = "resourceBar filter-shadow";
+  elem.style.setProperty("--units:",resource.cap);
+  elem.id = `resource-${resource.id}`;
+  var fill = document.createElement("div");
+  fill.classList.add("resourceBarFill");
+  fill.classList.add("bg-" + resource.id);
+  fill.id = `resourceFill-${resource.id}`;
+  var name = document.createElement("p");
+  name.className = "resourceBarName header headerSmall filter-shadow";
+  name.innerHTML = resource.name;
+  var count = document.createElement("p");
+  count.className = "resourceBarCount header headerSmall";
+  count.innerHTML = `0/${resource.cap}`;
+  count.id = `resourceCount-${resource.id}`;
+
+  elem.appendChild(fill);
+  elem.appendChild(name);
+  elem.appendChild(count);
+
+  return elem;
+}
+function createResourceDiamondElement(resource) {
+  var elem = document.createElement("div");
+  elem.classList.add("resourceDiamond");
+  elem.style.display = "none";
+  elem.id = `resource-${resource.id}`;
+  var img = document.createElement("img");
+  img.classList.add("filter-shadow");
+  img.src = `resources/img/resources/${resource.id}.png`;
+  var bg = document.createElement("div");
+  bg.classList.add("resourceDiamondBackground");
+  var name = document.createElement("p");
+  name.className = "resourceName header headerSmall filter-shadow";
+  name.innerHTML = resource.name;
+  var count = document.createElement("p");
+  count.className = "resourceCounter filter-shadow header";
+  count.innerHTML = 0;
+  count.id = `resourceCount-${resource.id}`;
+
+  elem.appendChild(bg);
+  elem.appendChild(img);
+  elem.appendChild(name);
+  elem.appendChild(count);
+
+  return elem;
 }
 function updateResources() {
   for (var i = 0; i < Resource.resources.length; i++) {
-    updateResource(Resource.resources[i].id,Player.player.resourceAmounts[Resource.resources[i].id]);
+    let id = Resource.resources[i].id;
+    let amt = Player.player.resourceAmounts[id];
+
+    updateResource(Resource.resourcesByName[id],amt);
   }
 }
-function updateResource(id,amt,show = false) {
+function updateResource(resource,amt,decrements,show) {
+  if (!resources.hasOwnProperty("cap")) {
+    updateResourceDiamond(resource.id,amt,show);
+  } else {
+    updateResourceBar(resource.id,amt,resource.cap,show);
+  }
+
+  var resourceElement = document.getElementById(`resource-${resource.id}`);
+  if (decrements) {
+    resourceElement.classList.add("decrementedResource");
+    setTimeout(function(){
+      resourceElement.classList.remove("decrementedResource");
+    },50);
+  } else if (!decrements){
+    resourceElement.classList.add("incrementedResource");
+    setTimeout(function(){
+      resourceElement.classList.remove("incrementedResource");
+    },50);
+  }
+}
+function updateResourceBar(id,amt,cap,show = false) {
+  var resourceElement = document.getElementById(`resource-${id}`);
+  if (amt != 0 || show) {
+    resourceElement.style.display = "inline-block";
+  }
+  var fill = document.getElementById(`resourceFill-${id}`);
+  fill.style.setAttribute("--fillUnits",amt);
+  var count = document.getElementById(`resourceCount-${id}`);
+  count.innerHTML = `${amt}/${cap}`;
+}
+function updateResourceDiamond(id,amt,show = false) {
   //display the element
   var resourceElement = document.getElementById(`resource-${id}`);
-  var resource = Resource.resourcesByName[id];
 
   //prevents the element from displaying at the start when there is no element, to prevent spoiling the existence of the rare resources
   if (amt != 0 || show) {
-    if (resource.counter == false) {
-      document.getElementById("rareResourcesHeader").style.display = "block";
-      resourceElement.style.display = "inline-block";
-    } else {
-      resourceElement.style.display = "block";
-    }
+    resourceElement.style.display = "inline-block";
   }
   //update element amounts
-  if (resource.counter != false) {
-    var count = document.getElementById(`resourceCount-${id}`);
-    if (amt == 1) {
-      count.innerHTML = amt + " " + resource.counter[0];
-    } else {
-      count.innerHTML = amt + " " + resource.counter[1];
-    }
-  }
-  var char = document.getElementById(`resourceChar-${id}`);
-  char.innerHTML = resource.char.repeat(amt);
-}
-function createMajorResourceElement(resource) {
-  var container = document.createElement("div");
-  container.classList.add("resource");
-  container.id = `resource-${resource.id}`;
-  var title = document.createElement("span");
-  title.classList.add("header");
-  title.classList.add("headerTwo");
-  title.innerHTML = resource.name;
-  var count = document.createElement("span");
-  count.classList.add("smallText");
-  count.id = `resourceCount-${resource.id}`;
-  var br = document.createElement("br");
-  var char = document.createElement("span");
-  char.classList.add("txt-" + resource.id);
-  char.classList.add("char-" + resource.charSize);
-  char.id = `resourceChar-${resource.id}`;
-
-  container.appendChild(title);
-  container.appendChild(count);
-  container.appendChild(br);
-  container.appendChild(char);
-
-  return container;
-}
-function createRareResourceElement(resource) {
-  var container = document.createElement("div");
-  container.id = `resource-${resource.id}`;
-  container.style.display = "none";
-  var title = document.createElement("span");
-  title.classList.add("smallText");
-  title.classList.add("header");
-  title.classList.add("txt-grey");
-  title.innerHTML = resource.name;
-  var br = document.createElement("br");
-  var char = document.createElement("span");
-  char.classList.add("txt-" + resource.id);
-  char.classList.add("char-" + resource.charSize);
-  char.id = `resourceChar-${resource.id}`;
-
-  container.appendChild(title);
-  container.appendChild(br);
-  container.appendChild(char);
-
-  return container;
+  var count = document.getElementById(`resourceCount-${id}`);
+  count.innerHTML = amt;
 }
 /*
 --------------
@@ -581,8 +668,16 @@ function sound(type) {
 UTILITY FUNCTIONS
 -----------------
 */
-function seededRandInt(max) {
-  return Math.floor(rawSeededRand()*(max));
+function toArray(object) {
+  if (object == false) {
+    return object;
+  } else if (!Array.isArray(object)) {
+    return [object];
+  }
+  return object;
+}
+function seededRandInt(max,min=0) {
+  return Math.floor(rawSeededRand()*(max-min+1)+min);
 }
 function seededRandFloat(max = 1) {
   return rawSeededRand()*max;
@@ -594,7 +689,7 @@ function randFloat(max) {
   return Math.random()*max;
 }
 function randElem(array) {
-  return array[seededRandInt(array.length)];
+  return array[seededRandInt(array.length - 1)];
 }
 function tileIdToCoords(id) {
   id = id.slice(4).split(",");

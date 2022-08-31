@@ -15,20 +15,17 @@ class Condition {
   static setSatisfied(conditionSet) {
     if (conditionSet == false) {
       return true;
+    } else if (!Array.isArray(conditionSet)) {
+      conditionSet = [conditionSet];
     }
 
     var allConditionsSatisfied = true;
-    if (Array.isArray(conditionSet)) {
-      for (var i = 0; i < conditionSet.length; i++) {
-         if (!conditionSet[i].isSatisfied()) {
-           allConditionsSatisfied = false;
-           break;
-         }
+    conditionSet.forEach((condition) => {
+      if (!condition.isSatisfied()) {
+        allConditionsSatisfied = false;
       }
-      return allConditionsSatisfied;
-    } else {
-      return conditionSet.isSatisfied();
-    }
+    });
+    return allConditionsSatisfied;
   }
 }
 

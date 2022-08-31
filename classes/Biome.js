@@ -14,12 +14,12 @@ class Biome {
   ) {
     this.id = id;
     this.title = title;
-    this.desc = desc;
+    this.desc = toArray(desc);
     this.explorationLogText = explorationLogText;
     this.tags = tags;
     this.resourceConditions = resourceConditions;
-    this.consequences = consequences;
-    this.conditions = conditions;
+    this.consequences = toArray(consequences);
+    this.conditions = toArray(conditions);
     this.failConsequences = failConsequences;
 
     this.hasBeenLogged = false;
@@ -49,12 +49,9 @@ class Biome {
     return Condition.setSatisfied(this.conditions);
   }
   getDesc() {
-    if (!Array.isArray(this.desc)) {
-      return this.desc;
-    } else {
-      return this.desc[0];
-      // this.desc.splice(0,1); the hell is this code doing here? unreachable
-    }
+    this.desc.push(this.desc[0]);
+    this.desc.splice(0,1);
+    return this.desc[0];
   }
   getFlavorText() {
     this.explorationLogText.push(this.explorationLogText[0]);

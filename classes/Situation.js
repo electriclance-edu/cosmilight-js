@@ -6,11 +6,19 @@ class Situation {
     this.biome = biome;
     this.imgUrl = imgUrl;
     this.header = header;
-    this.paragraphs = paragraphs;
-    this.consequences = consequences;
-    this.choices = choices;
+    this.paragraphs = toArray(paragraphs);
+    this.consequences = toArray(consequences);
+    this.choices = toArray(choices);
 
     Situation.situations[id] = this;
+  }
+  static getSituation(id) {
+    if (Object.keys(this.situations).includes(id)) {
+      return this.situations[id];
+    } else {
+      console.log("Situation.getSituation(): situation with id '" + id + "' does not exist.");
+      return false;
+    }
   }
   static generateMinorSituations() {
     new Situation(
@@ -27,7 +35,7 @@ class Situation {
         }
       ],
       [
-        new Consequence("addResource",["water","1"])
+        new Consequence("addResource",{id:"water",amt:1})
       ],
       [
         new SituationChoice(
@@ -47,7 +55,7 @@ class Situation {
           false,
           [
             new Consequence("endSituation"),
-            new Consequence("addResource",["water","3"])
+            new Consequence("addResource",{id:"water",amt:3})
           ],
           [
             new Condition("conditionType","param")
@@ -61,11 +69,7 @@ class Situation {
       "areas/grove.png",
       "A quaint patch of color.",
       [
-        "You find a small patch of thorned flowers, their color dimmed to near-grey, yet glowing faintly.",
-        {
-          content:"waoooo text but with color and glow!!!!",
-          class:["water","strongGlow"]
-        }
+        "You find a small patch of thorned flowers, their color dimmed to near-grey, yet still shimmering faintly with lumenglow."
       ],
       [],
       [
@@ -74,10 +78,13 @@ class Situation {
           "Their color may yet return.",
           false,
           [
-            new Consequence("addResource",["lumen",[1,3]]),
-            new Consequence("log","The flowers brighten and glow under the nourishment of the scarce water, beginning to drip with lumen. You carefully take a few drops."),
+            new Consequence("addResource",{id:"lumen",amt:[1,3],display:"?"}),
+            new Consequence("takeResource",{id:"water",amt:2}),
+            new Consequence("log","The flowers brighten and glow under the nourishment of the scarce water, beginning to drip with lumen. You carefully take a few drops.")
           ],
-          new Condition("hasResources",["water",2])
+          [
+            new Condition("hasResource",{id:"water",amt:2}),
+          ]
         ),
         new SituationChoice(
           "Harvest the flowers.",
@@ -85,10 +92,28 @@ class Situation {
           "The thorns of the flowers will hurt.",
           [
             new Consequence("hurt",1),
-            new Consequence("addResource",["lumen",[1,5]]),
-            new Consequence("log","The flowers brighten and glow under the nourishment of the scarce water, beginning to drip with lumen. You carefully take a few drops."),
+            new Consequence("addResource",{id:"lumen",amt:[1,5],display:"+?"}),
+            new Consequence("log","The flowers brighten and glow under the nourishment of the scarce water, beginning to drip with lumen. You carefully take a few drops.")
           ]
-        )
+        ),
+        new SituationChoice(
+          "Weave their petals into thread.",
+          "Valuable thread for all materials.",
+          false,
+          [
+            new Consequence("addResource",{id:"thread",amt:[1,3],display:"?"}),
+            new Consequence("log","The flowers brighten and glow under the nourishment of the scarce water, beginning to drip with lumen. You carefully take a few drops.")
+          ]
+        ),
+        new SituationChoice(
+          "EAT THE FLOWERS",
+          "WATER YUM",
+          false,
+          [
+            new Consequence("addResource",{id:"water",amt:[3,5],display:"+?"}),
+            new Consequence("log","The flowers brighten and glow under the nourishment of the scarce water, beginning to drip with lumen. You carefully take a few drops.")
+          ]
+        ),
       ]
     )
   }

@@ -87,9 +87,6 @@ class World {
         tiles[i][j] = new Tile(biome,debug_templateStructures[randInt(debug_templateStructures.length)]);
       }
     }
-    //sample perlin noise for base biomes (layer temperatures and stuff to determine what goes where?)
-    //add on city/meteorite seeds
-    //turn seeds into structures
 
     this.tiles = tiles;
     this.setTile(0,0,new Tile("center"));

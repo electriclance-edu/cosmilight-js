@@ -2,28 +2,28 @@ class Resource {
   static resources = [];
   static resourcesByName = {};
 
-  constructor(id, name, char, charSize, counter) {
+  constructor(id,name,cap = false,isRare = false) {
     this.id = id;
     this.name = name;
-    this.char = char;
-    this.charSize = charSize;
-    this.counter = counter;
+    this.cap = cap;
+    this.isRare = isRare;
 
     Resource.resources.push(this);
     Resource.resourcesByName[id] = this;
   }
   static generateResources() {
-    new Resource("water","Water","🌢","big",["flask","flasks"]);
-    new Resource("lumen","Lumen","🟆","med",["droplet","droplets"]);
-    new Resource("thread","Thread","≋","tiny",["spool","spools"]);
-    new Resource("nectar","Nectar","🟐","med",["shard","shards"]);
-    new Resource("seed","Seed","⚉","med",["seed","seeds"]);
-    new Resource("steelsilk","Steelsilk","◆","med",false);
-    new Resource("sableSap","Sable Sap","✾","small",false);
-    new Resource("heartstring","Heartstring","❦","small",false);
-    new Resource("radiantCore","Radiant Core","✠","small",false);
+    new Resource("water","Water",10);
+    new Resource("lumen","Lumen");
+    new Resource("thread","Thread");
+    new Resource("nectar","Nectar");
+    new Resource("seed","Seed");
+    new Resource("steelsilk","Steelsilk",false,true);
+    new Resource("sableSap","Sable Sap",false,true);
+    new Resource("heartstring","Heartstring",false,true);
+    new Resource("radiantCore","Radiant Core",false,true);
   }
 }
+//🌢🟆≋🟐⚉◆✾❦✠
 //🎕🟐🞺🞛🞇🟂
 /*
 HOW TO CREATE A RESOURCE

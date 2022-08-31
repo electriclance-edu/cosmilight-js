@@ -52,19 +52,13 @@
       <table id="debug_world" class="debugTable" onclick="this.innerHTML = '';"></table>
     </div>
     <div class="content">
-      <div class="left glass-bg">
-        <p class="header stylizedHeader textAlignCenter">Log</p>
+      <div class="logParent">
         <div class="chatlog hiddenScrollbar" id="chatlog"></div>
-        <div>
-          <hr>
-          <p class="header stylizedHeader textAlignCenter">Resources</p>
-          <div class="resources" id="resources">
-            <div id="majorResources">
-
-            </div>
-            <p class="header textAlignCenter" id="rareResourcesHeader" style="display:none">Rare Resources</p>
-            <div class="rareResources" id="rareResources"></div>
-          </div>
+      </div>
+      <div class="resourceParent hiddenScrollbar">
+        <div class="resources" id="resources">
+          <div class="resourceDiamonds" id="resourceDiamonds"></div>
+          <div class="resourceBars" id="resourceBars"></div>
         </div>
       </div>
       <div class="center">
@@ -82,17 +76,15 @@
             <div class="progressBarFill"  id="darkenedScreenProgress"></div>
           </div>
         </div>
-        <div id="displayParent">
+        <div id="displayParent" class="displayParent">
           <div class="mapDisplay fill flex-center hidden" id="mapDisplay">
             <div class="positioner" id="isotilePositioner"></div>
           </div>
           <div class="expeditionDisplay fill flex-center hidden" id="expeditionDisplay">
             <div class="leftExpeditionDisplay flex-center">
-              <div id="situationContainer">
-
-              </div>
+              <div id="situationContainer"></div>
             </div>
-            <div class="rightExpeditionDisplay flex-center">
+            <div class="rightExpeditionDisplay flex-center hidden">
               <p class="header stylizedHeader smallMargin">Map</p>
               <p class="txt-grey noMargin textAlignCenter">Click on a location to move to it.<br>You may move to past locations at an increased cost.</p>
               <div class="locationDisplay flex-column">

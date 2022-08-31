@@ -20,7 +20,7 @@ class Player {
   }
   incrementResource(id,amt) {
     Player.player.resourceAmounts[id] += amt;
-    updateResource(id,Player.player.resourceAmounts[id]);
+    updateResource(Resource.resourcesByName[id],Player.player.resourceAmounts[id],amt < 0);
   }
   hasResource(id,amt) {
     return Player.player.resourceAmounts[id] >= amt;
