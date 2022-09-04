@@ -453,10 +453,11 @@ body .debugMenu *:not(.header) {
   max-width:600px;
   left:15px;
   top:50px;
-  max-height:50%;
+  max-height:30%;
   overflow:hidden;
   -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);
   z-index:100;
+  filter:drop-shadow(0 0 5px rgb(14,17,24)) drop-shadow(0 0 2px rgb(14,17,24));
 }
 .resourceParent {
   position:absolute;
@@ -680,7 +681,7 @@ body .debugMenu *:not(.header) {
   filter:drop-shadow(0 0 5px rgb(150,0,0));
   z-index:1;
 }
-.resourceBar:incrementedResource {
+.resourceBar.incrementedResource {
   transition-duration:0.05s !important;
   transform:scale(1.05);
   border-width:5px;
@@ -688,10 +689,24 @@ body .debugMenu *:not(.header) {
   filter:drop-shadow(0 0 5px rgb(0,150,0));
   z-index:1;
 }
+.resourceBar.cappedResource {
+  transition-duration:0.05s !important;
+  border-width:5px;
+  border-color:rgb(120,120,0);
+  filter:drop-shadow(0 0 5px rgb(150,150,0));
+  z-index:1;
+}
+.resourceBar.lackingResource {
+  transition-duration:0.05s !important;
+  border-width:5px;
+  border-color:rgb(50,50,170);
+  filter:drop-shadow(0 0 5px rgb(80,80,200));
+  z-index:1;
+}
 .resourceBar {
-  --units:20;
-  --unitPx:25px;
-  width:calc(var(--unitPx) * var(--units));
+  --lengthUnits:20;
+  --unitWidth:25px;
+  width:calc(var(--unitWidth) * var(--lengthUnits) + 10px);
   height:35px;
   position:relative;
   background-color:rgb(30,45,60);
@@ -706,8 +721,8 @@ body .resourceBar .resourceBarFill.bg-water {
   background-color:rgb(100,100,255);
 }
 .resourceBar .resourceBarFill {
-  --fillUnits:3;
-  width:calc(var(--unitPx) * var(--fillUnits));
+  --fillUnits:0;
+  width:calc(var(--unitWidth) * var(--fillUnits));
   height:100%;
   position:absolute;
   left:0;
@@ -776,6 +791,18 @@ body .resourceBar .resourceBarFill.bg-water {
   transform:translate(0,-64%) scale(1.5);
   border-width:10px;
   border-color:rgb(0,255,0);
+}
+.resourceDiamond.cappedResource .resourceDiamondBackground {
+  transition-duration:0.05s !important;
+  transform:rotate(45deg) translate(-50%,-50%) scale(1.2);
+  border-width:10px;
+  border-color:rgb(255,255,75);
+}
+.resourceDiamond.lackingResource .resourceDiamondBackground {
+  transition-duration:0.05s !important;
+  transform:rotate(45deg) translate(-50%,-50%) scale(1.2);
+  border-width:10px;
+  border-color:rgb(75,75,255);
 }
 .resourceDiamond:hover .resourceCounter {
   opacity:0;

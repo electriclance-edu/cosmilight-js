@@ -36,13 +36,14 @@ var consequenceTriggers = {
     if (Array.isArray(param.amt)) {
       amt = seededRandInt(param.amt[1],param.amt[0]);
     }
-    Player.player.incrementResource(param.id,amt);
+    Resource.byId[param.id].increment(amt);
   },
   takeResource:(param)=>{
+    var amt = param.amt;
     if (Array.isArray(param.amt)) {
-      param.amt = param.amt[seededRandInt(param.amt.length)];
+      amt = param.amt[seededRandInt(param.amt.length)];
     }
-    Player.player.incrementResource(param.id,-param.amt);
+    Resource.byId[param.id].increment(-amt);
   },//must give a random amt of resource if given array of amt
   hurt:(amtToHurt)=>{
     if (Array.isArray(amtToHurt)) {

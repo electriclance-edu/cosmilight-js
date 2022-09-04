@@ -87,14 +87,13 @@ function initialize() {
   movePlayer(start[0],start[1],startTileElem,true);
 
   if (!startWithResources) {
-    Player.player.initializeResources();
-    Player.player.incrementResource("water",5);
-    Player.player.incrementResource("lumen",5);
-    Player.player.incrementResource("thread",3);
-    Player.player.incrementResource("nectar",1);
-    Player.player.incrementResource("seed",1);
+    Resource.byId["water"].increment(5);
+    Resource.byId["lumen"].increment(5);
+    Resource.byId["thread"].increment(3);
+    Resource.byId["nectar"].increment(1);
+    Resource.byId["seed"].increment(1);
   } else {
-    Player.player.initializeResources(10);
+    Resource.setAllAmt(10);
   }
   updateResources();
 
@@ -279,7 +278,7 @@ function createSituationChoiceObject(situationChoice,id,index) {
   var costConditions = situationChoice.getConditions("hasResource");
   if (costConditions != false) {
     for (var i = 0; i < costConditions.length; i++) {
-      var cost = createResourceAmtElement(Resource.resourcesByName[costConditions[i].param.id],costConditions[i].param.amt,true);
+      var cost = createResourceAmtElement(Resource.byId[costConditions[i].param.id],costConditions[i].param.amt,true);
       cost.classList.add("txt-shadowless");
       row.appendChild(cost);
     }
@@ -288,7 +287,7 @@ function createSituationChoiceObject(situationChoice,id,index) {
   var rewardConsequences = situationChoice.getConsequences("addResource");
   if (rewardConsequences != false) {
     for (var i = 0; i < rewardConsequences.length; i++) {
-      var resource = Resource.resourcesByName[rewardConsequences[i].param.id];
+      var resource = Resource.byId[rewardConsequences[i].param.id];
       var amtText = "+?";
       if (rewardConsequences[i].param.hasOwnProperty("display")) {
         amtText = rewardConsequences[i].param.display;
@@ -332,9 +331,7 @@ function createResourceElements() {
   var barsParent = document.getElementById("resourceBars");
   for (var i = 0; i < Resource.resources.length; i++) {
     let resource = Resource.resources[i];
-    console.log(resource);
     if (resource.cap != false) {
-      console.log("cowabungus");
       barsParent.appendChild(createResourceBarElement(resource));
     } else {
       diamondParent.appendChild(createResourceDiamondElement(resource));
@@ -344,7 +341,7 @@ function createResourceElements() {
 function createResourceBarElement(resource) {
   var elem = document.createElement("div");
   elem.className = "resourceBar filter-shadow";
-  elem.style.setProperty("--units:",resource.cap);
+  elem.style.setProperty("--lengthUnits",resource.cap);
   elem.id = `resource-${resource.id}`;
   var fill = document.createElement("div");
   fill.classList.add("resourceBarFill");
@@ -390,44 +387,50 @@ function createResourceDiamondElement(resource) {
   return elem;
 }
 function updateResources() {
-  for (var i = 0; i < Resource.resources.length; i++) {
-    let id = Resource.resources[i].id;
-    let amt = Player.player.resourceAmounts[id];
-
-    updateResource(Resource.resourcesByName[id],amt);
-  }
+  Resource.resources.forEach((resource) => {
+    updateResource(resource);
+  });
 }
-function updateResource(resource,amt,decrements,show) {
-  if (!resources.hasOwnProperty("cap")) {
-    updateResourceDiamond(resource.id,amt,show);
+function updateResource(resource,show = false) {
+  if (resource.cap == false) {
+    updateResourceDiamond(resource,show);
   } else {
-    updateResourceBar(resource.id,amt,resource.cap,show);
-  }
-
-  var resourceElement = document.getElementById(`resource-${resource.id}`);
-  if (decrements) {
-    resourceElement.classList.add("decrementedResource");
-    setTimeout(function(){
-      resourceElement.classList.remove("decrementedResource");
-    },50);
-  } else if (!decrements){
-    resourceElement.classList.add("incrementedResource");
-    setTimeout(function(){
-      resourceElement.classList.remove("incrementedResource");
-    },50);
+    updateResourceBar(resource,show);
   }
 }
-function updateResourceBar(id,amt,cap,show = false) {
+function animateResource(id,state) {
+  var stateClasses = {
+    loss:"decrementedResource",
+    gain:"incrementedResource",
+    capped:"cappedResource",
+    lacking:"lackingResource"
+  }
+
+  var resourceElement = document.getElementById(`resource-${id}`);
+  var className = stateClasses[state];
+
+  resourceElement.classList.add(className);
+  setTimeout(function(){
+    resourceElement.classList.remove(className);
+  },50);
+}
+function updateResourceBar(resource,show = false) {
+  var id = resource.id;
+  var amt = resource.amt;
+  var cap = resource.cap;
+
   var resourceElement = document.getElementById(`resource-${id}`);
   if (amt != 0 || show) {
     resourceElement.style.display = "inline-block";
   }
   var fill = document.getElementById(`resourceFill-${id}`);
-  fill.style.setAttribute("--fillUnits",amt);
+  fill.style.setProperty("--fillUnits",amt);
   var count = document.getElementById(`resourceCount-${id}`);
   count.innerHTML = `${amt}/${cap}`;
 }
-function updateResourceDiamond(id,amt,show = false) {
+function updateResourceDiamond(resource,show = false) {
+  var id = resource.id;
+  var amt = resource.amt;
   //display the element
   var resourceElement = document.getElementById(`resource-${id}`);
 
@@ -711,6 +714,10 @@ function simplex(x,y,scale) {
 }
 function dist(pointOne,pointTwo) {
   return Math.sqrt((pointOne[0] - pointTwo[0])**2 + (pointOne[1] - pointTwo[1])**2);
+}
+function clamp(num,min,max) {
+  //https://stackoverflow.com/questions/5842747/how-can-i-use-javascript-to-limit-a-number-between-a-min-max-value
+   return Math.max(min, Math.min(num, max));
 }
 /*
 -----------------

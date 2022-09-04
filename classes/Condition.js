@@ -34,7 +34,7 @@ var conditionChecks = {
     return Player.player.hasTag(tag);
   },
   hasResource:(param)=>{
-    return Player.player.hasResource(param.id,param.amt);
+    return Resource.byId[param.id].hasAmt(param.amt);
   },
   none:()=>{
     return true;

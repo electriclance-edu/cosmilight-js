@@ -92,7 +92,7 @@ class Situation {
           "The thorns of the flowers will hurt.",
           [
             new Consequence("hurt",1),
-            new Consequence("addResource",{id:"lumen",amt:[1,5],display:"+?"}),
+            new Consequence("addResource",{id:"lumen",amt:[1,5],display:"?"}),
             new Consequence("log","The flowers brighten and glow under the nourishment of the scarce water, beginning to drip with lumen. You carefully take a few drops.")
           ]
         ),
